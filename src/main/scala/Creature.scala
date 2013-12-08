@@ -60,6 +60,24 @@ case class Creature private(creatureCard: CreatureCard, state: Int) {
   def isBlocking: Boolean = (state >> BlockingBitOffset) != 0
   def blockedId: Int = state >> BlockingBitOffset
 
+  def attack(tap: Boolean = true): Creature = tap match {
+    case true => Creature(creatureCard, state | AttackingBitMask | TappedBitMask)
+    case false => Creature(creatureCard, state | AttackingBitMask)
+  }
+
+  def block(blockedId: Int): Creature =
+    Creature(
+      creatureCard,
+      (blockedId << BlockingBitOffset) | (state & ((1 << BlockingBitOffset) - 1))
+    )
+
+  def removeFromCombat() = Creature(creatureCard, state & TappedBitMask)
+
+  def tap() = Creature(creatureCard, state | TappedBitMask)
+
+  def untap() = Creature(creatureCard, state & ~TappedBitMask)
+
+
   override def toString = {
     val state = (if (isTapped) "T" else "") +
                 (if (isAttacking) "A" else "") +

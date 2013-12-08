@@ -79,4 +79,45 @@ class CreatureSpec extends FlatSpec {
       assert(Creature.fromString(creatureCardString).toString == creatureCardString)
   }
 
+  it should "attack" in {
+    val creature = Creature(CreatureCard(1, 1))
+
+    assert(creature.attack().isAttacking)
+    assert(creature.attack().isTapped)
+    assert(!creature.attack().isBlocking)
+
+    assert(creature.attack(tap=false).isAttacking)
+    assert(!creature.attack(tap=false).isTapped)
+    assert(!creature.attack(tap=false).isBlocking)
+  }
+
+  it should "block" in {
+    val creature = Creature(CreatureCard(1, 1))
+
+    assert(creature.block(47).isBlocking)
+    assert(creature.block(47).blockedId === 47)
+    assert(!creature.block(47).isTapped)
+    assert(!creature.block(47).isAttacking)
+  }
+
+  it should "tap and uptap" in {
+    val creature = Creature(CreatureCard(1, 1))
+
+    assert(creature.tap().isTapped)
+    assert(!creature.tap().untap().isTapped)
+    assert(!creature.tap().untap().isAttacking)
+    assert(!creature.tap().untap().isBlocking)
+  }
+
+  it should "remove itself from combat" in {
+    val creature = Creature(CreatureCard(1, 1))
+
+    assert(!creature.attack().removeFromCombat().isAttacking)
+    assert(!creature.attack().removeFromCombat().isBlocking)
+    assert(creature.attack().removeFromCombat().isTapped)
+
+    assert(!creature.block(1).removeFromCombat().isAttacking)
+    assert(!creature.block(1).removeFromCombat().isBlocking)
+  }
+
 }
