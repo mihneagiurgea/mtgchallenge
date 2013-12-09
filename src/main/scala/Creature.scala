@@ -44,11 +44,17 @@ object Creature {
   *
   * Should be constructed using the companion object.
   */
-case class Creature private(creatureCard: CreatureCard, state: Int) {
+case class Creature private(creatureCard: CreatureCard, state: Int)
+  extends Ordered[Creature] {
+
   import Creature._
 
   require(creatureCard != null)
   require(state >= 0)
+
+  def compare(that: Creature) =
+    if (this.creatureCard == that.creatureCard) this.state - that.state
+    else this.creatureCard compare that.creatureCard
 
   // Getters for CreatureCard attributes. This implementation might
   // change as CreatureCards get more attributes (trample, flying, etc.)

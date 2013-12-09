@@ -41,4 +41,11 @@ class CreatureCardSpec extends FlatSpec {
     assert(cr.toString === s)
   }
 
+  it should "be ordered" in {
+    val a = CreatureCard(4, 3)
+    val b = CreatureCard(1, 5)
+    val c = CreatureCard(0, 6)
+
+    assert(List(a, b, c).sorted === List(c, b, a))
+  }
 }

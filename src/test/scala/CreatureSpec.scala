@@ -120,4 +120,12 @@ class CreatureSpec extends FlatSpec {
     assert(!creature.block(1).removeFromCombat().isBlocking)
   }
 
+  it should "be ordered" in {
+    val c1 = Creature(CreatureCard(1, 1))
+    val c2 = Creature(CreatureCard(1, 1), tapped=true)
+    val c3 = Creature(CreatureCard(1, 2))
+
+    assert(List(c1, c2, c3).sorted === List(c3, c2, c1).sorted)
+  }
+
 }
