@@ -29,5 +29,6 @@ class PlayerBattlegroundSpec extends FlatSpec {
 
     val emptyObj = PlayerBattleground()
     assert(emptyObj === PlayerBattleground.fromString(emptyObj.toString))
+    assert(emptyObj === PlayerBattleground.fromString(" "))
   }
 }

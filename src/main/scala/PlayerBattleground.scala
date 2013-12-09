@@ -9,7 +9,7 @@ object PlayerBattleground {
   }
 
   def fromString(s: String): PlayerBattleground = {
-    val split = s.split(", ").toList.filter(_.length > 0)
+    val split = s.trim.split(", ").toList.map(_.trim).filter(_.length > 0)
     PlayerBattleground(split.map(Creature.fromString(_)))
   }
 
