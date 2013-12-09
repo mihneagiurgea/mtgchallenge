@@ -6,38 +6,39 @@ import main.scala.CreatureCard
 
 class CreatureSpec extends FlatSpec {
 
+  val creatureCard = CreatureCard(1, 1)
+  val creature = Creature(creatureCard)
+
   "Creature" should "return equivalent instances for same arguments only" in {
-    val cc = CreatureCard(1, 1)
-    val c1 = Creature(cc, tapped=true)
-    val c2 = Creature(cc, tapped=true, attacking=true)
+    val c1 = Creature(creatureCard, tapped=true)
+    val c2 = Creature(creatureCard, tapped=true, attacking=true)
 
     assert(c1 !== c2)
     assert(!(c1 eq c2))
     assert(!(c1 equals c2))
     assert(c1.hashCode !== c2.hashCode)
 
-    val c3 = Creature(cc, tapped=true)
+    val c3 = Creature(creatureCard, tapped=true)
     assert(c1 === c3)
     assert(!(c1 eq c3))
     assert(c1 equals c3)
     assert(c1.hashCode === c3.hashCode)
   }
 
-  it should "define accessors for all its properties" in {
-    val cc = CreatureCard(1, 1)
-    var creature = Creature(cc)
+  it should "define acreatureCardessors for all its properties" in {
+    var creature = Creature(creatureCard)
     assert(!creature.isTapped)
     assert(!creature.isAttacking)
     assert(!creature.isBlocking)
     assert(creature.blockedId == 0)
 
-    creature = Creature(cc, tapped=true, attacking=true)
+    creature = Creature(creatureCard, tapped=true, attacking=true)
     assert(creature.isTapped)
     assert(creature.isAttacking)
     assert(!creature.isBlocking)
     assert(creature.blockedId == 0)
 
-    creature = Creature(cc, blockedId=3)
+    creature = Creature(creatureCard, blockedId=3)
     assert(!creature.isTapped)
     assert(!creature.isAttacking)
     assert(creature.isBlocking)
@@ -45,11 +46,8 @@ class CreatureSpec extends FlatSpec {
   }
 
   it should "define getters for power and toughness" in {
-    val cc = CreatureCard(1, 2)
-    val creature = Creature(cc)
-
-    assert(cc.power == 1)
-    assert(cc.toughness == 2)
+    assert(Creature(CreatureCard(1, 2)).power == 1)
+    assert(Creature(CreatureCard(1, 2)).toughness == 2)
   }
 
   it should "recognize objects from strings" in {
@@ -80,8 +78,6 @@ class CreatureSpec extends FlatSpec {
   }
 
   it should "attack" in {
-    val creature = Creature(CreatureCard(1, 1))
-
     assert(creature.attack().isAttacking)
     assert(creature.attack().isTapped)
     assert(!creature.attack().isBlocking)
@@ -92,8 +88,6 @@ class CreatureSpec extends FlatSpec {
   }
 
   it should "block" in {
-    val creature = Creature(CreatureCard(1, 1))
-
     assert(creature.block(47).isBlocking)
     assert(creature.block(47).blockedId === 47)
     assert(!creature.block(47).isTapped)
@@ -101,8 +95,6 @@ class CreatureSpec extends FlatSpec {
   }
 
   it should "tap and uptap" in {
-    val creature = Creature(CreatureCard(1, 1))
-
     assert(creature.tap().isTapped)
     assert(!creature.tap().untap().isTapped)
     assert(!creature.tap().untap().isAttacking)
@@ -110,8 +102,6 @@ class CreatureSpec extends FlatSpec {
   }
 
   it should "remove itself from combat" in {
-    val creature = Creature(CreatureCard(1, 1))
-
     assert(!creature.attack().removeFromCombat().isAttacking)
     assert(!creature.attack().removeFromCombat().isBlocking)
     assert(creature.attack().removeFromCombat().isTapped)
