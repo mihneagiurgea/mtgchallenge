@@ -1,6 +1,6 @@
 package main.scala
 
-/** Factory for CreatureCard instances. */
+/** Factory for CreatureCard instances - NOT THREAD SAFE. */
 object CreatureCard {
 
   protected var cache = collection.mutable.Map[(Int, Int), CreatureCard]()
