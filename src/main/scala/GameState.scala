@@ -56,4 +56,15 @@ case class GameState(
 
   override def toString = s"$life1/$life2 ($activePlayer/$turnPhase): $battleground"
 
+  /* State-altering methods */
+
+  def endCurrentTurn(): GameState =
+    GameState(
+      life1,
+      life2,
+      defendingPlayer,
+      TurnPhase.DeclareAttackers,
+      battleground.untap(defendingPlayer))
+
+
 }

@@ -47,5 +47,11 @@ case class Battleground(
     case 2 => player2
   }
 
+  // /* State-altering methods */
+  def untap(controller: Int): Battleground = controller match {
+    case 1 => Battleground(player1.map(_.untap), player2)
+    case 2 => Battleground(player1, player2.map(_.untap))
+  }
+
   override def toString = s"${player1.mkString(", ")} vs ${player2.mkString(", ")}"
 }

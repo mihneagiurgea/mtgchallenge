@@ -56,8 +56,18 @@ class GameStateSpec extends FlatSpec {
     assert(GameState(0, 0).outcome === Outcome.Draw)
   }
 
+  it should "end the current turn and move to the next one" in {
+    val gameState = GameState(
+      activePlayer = 1,
+      battleground = Battleground.fromString("2/3 (T), 4/6 (T) vs 1/1 (T)"))
+    val expectedGameState = GameState(
+      activePlayer = 2,
+      battleground = Battleground.fromString("2/3 (T), 4/6 (T) vs 1/1"))
+
+    assert(gameState.endCurrentTurn() === expectedGameState)
+  }
+
   def assertIsSerializable(gameState: GameState): Unit =
     assert(gameState === GameState.fromString(gameState.toString))
-
 
 }
