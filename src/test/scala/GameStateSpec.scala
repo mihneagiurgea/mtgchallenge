@@ -118,6 +118,13 @@ class GameStateSpec extends FlatSpec {
         battleground = Battleground.fromString("1/1 (TA), 2/2 (TA) vs 3/3 (B#1)")))
   }
 
+  it should "compute combat assignments" in {
+    val gameState = GameState(
+      battleground = Battleground.fromString("1/1 (TA), 2/2 (TA) vs 3/3 (B#0), 4/4 (B#0)"))
+
+    assert(gameState.combatAssignment ===
+      Map(0 -> List(0, 1), 1 -> List[Int]()))
+  }
 
   def assertIsSerializable(gameState: GameState): Unit =
     assert(gameState === GameState.fromString(gameState.toString))

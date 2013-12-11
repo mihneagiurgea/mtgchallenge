@@ -66,6 +66,18 @@ case class GameState(
       battleground(attackingPlayer, blockedIdx).isAttacking
     })
 
+  def combatAssignment: Map[Int, List[Int]] = {
+    val blockers = battleground(defendingPlayer).zipWithIndex.filter(_._1.isBlocking)
+    val groupedWithIndex = blockers.groupBy(_._1.blockedId)
+    val grouped = groupedWithIndex.map({ case (k, v) => (k, v.map(_._2)) })
+
+    val attackerIndexes = battleground(attackingPlayer).zipWithIndex.
+      filter(_._1.isAttacking).map(_._2)
+    attackerIndexes.filter(!grouped.contains(_)).foldLeft(grouped)(
+      (map, idx) => if (map.contains(idx)) map else map.updated(idx, List[Int]()))
+  }
+
+
   /* State-altering methods */
 
   def declareAttackers(attackingCreatureUids: List[Int]): GameState = {
