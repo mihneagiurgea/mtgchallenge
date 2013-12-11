@@ -11,11 +11,11 @@ object Creature {
   val TappedBitMask = 1
 
   def apply(creatureCard: CreatureCard, tapped: Boolean = false,
-            attacking: Boolean = false, blockedId: Int = 0): Creature = {
-    require(blockedId >= 0)
-    require(!(blockedId > 0 && attacking))
+            attacking: Boolean = false, blockedId: Int = -1): Creature = {
+    require(blockedId >= -1)
+    require(!(blockedId >= 0 && attacking))
 
-    var state = blockedId << BlockingBitOffset
+    var state = (blockedId + 1) << BlockingBitOffset
     if (attacking) state |= AttackingBitMask
     if (tapped) state |= TappedBitMask
     new Creature(creatureCard, state)
@@ -33,7 +33,7 @@ object Creature {
     val regex = new Regex("B#(\\d+)", "blockedIdString")
     val blockedId: Int = regex findFirstIn stateString match {
       case Some(regex(blockedIdString)) => blockedIdString.toInt
-      case None => 0
+      case None => -1
     }
 
     Creature(creatureCard, tapped=tapped, attacking=attacking, blockedId=blockedId)
@@ -63,19 +63,22 @@ case class Creature private(creatureCard: CreatureCard, state: Int)
 
   def isTapped: Boolean = (state & TappedBitMask) == 1
   def isAttacking: Boolean = (state & AttackingBitMask) == AttackingBitMask
-  def isBlocking: Boolean = (state >> BlockingBitOffset) != 0
-  def blockedId: Int = state >> BlockingBitOffset
+  def blockedId: Int = (state >> BlockingBitOffset) - 1
+  def isBlocking: Boolean = blockedId >= 0
 
   def attack(tap: Boolean = true): Creature = tap match {
     case true => Creature(creatureCard, state | AttackingBitMask | TappedBitMask)
     case false => Creature(creatureCard, state | AttackingBitMask)
   }
 
-  def block(blockedId: Int): Creature =
+  def block(blockedId: Int): Creature = {
+    require(blockedId >= 0)
+
     Creature(
       creatureCard,
-      (blockedId << BlockingBitOffset) | (state & ((1 << BlockingBitOffset) - 1))
+      ((blockedId + 1) << BlockingBitOffset) | (state & ((1 << BlockingBitOffset) - 1))
     )
+  }
 
   def removeFromCombat() = Creature(creatureCard, state & TappedBitMask)
 

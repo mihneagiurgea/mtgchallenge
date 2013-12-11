@@ -25,18 +25,18 @@ class CreatureSpec extends FlatSpec {
     assert(c1.hashCode === c3.hashCode)
   }
 
-  it should "define acreatureCardessors for all its properties" in {
+  it should "define accessors for all its properties" in {
     var creature = Creature(creatureCard)
     assert(!creature.isTapped)
     assert(!creature.isAttacking)
     assert(!creature.isBlocking)
-    assert(creature.blockedId == 0)
+    assert(creature.blockedId == -1)
 
     creature = Creature(creatureCard, tapped=true, attacking=true)
     assert(creature.isTapped)
     assert(creature.isAttacking)
     assert(!creature.isBlocking)
-    assert(creature.blockedId == 0)
+    assert(creature.blockedId == -1)
 
     creature = Creature(creatureCard, blockedId=3)
     assert(!creature.isTapped)
@@ -59,11 +59,11 @@ class CreatureSpec extends FlatSpec {
     assert(creature.isAttacking)
     assert(!creature.isBlocking)
 
-    creature = Creature.fromString("2/3 (B#47)")
+    creature = Creature.fromString("2/3 (B#0)")
     assert(!creature.isTapped)
     assert(!creature.isAttacking)
     assert(creature.isBlocking)
-    assert(creature.blockedId == 47)
+    assert(creature.blockedId == 0)
 
     creature = Creature.fromString("2/3")
     assert(!creature.isTapped)
