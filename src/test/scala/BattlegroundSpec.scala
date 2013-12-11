@@ -15,10 +15,12 @@ class BattlegroundSpec extends FlatSpec {
       Battleground().addCreature(c1, 1).addCreature(c2, 1).addCreature(c3, 2)
 
   "Battleground" should "add creatures under some player's control" in {
-    val battleground2 =
-      Battleground().addCreature(c3, 2).addCreature(c2, 1).addCreature(c1, 1)
-
-    assert(battleground === battleground2)
+    assert(battleground ===
+      Battleground().addCreature(c3, 2).addCreature(c2, 1).addCreature(c1, 1))
+    assert(battleground ===
+      Battleground().addCreature(c2, 1).addCreature(c1, 1).addCreature(c3, 2))
+    assert(battleground ===
+      Battleground().addCreature(c1, 1).addCreature(c3, 2).addCreature(c2, 1))
   }
 
   it should "remove creatures" in {
