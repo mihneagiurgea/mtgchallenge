@@ -56,7 +56,24 @@ case class GameState(
 
   override def toString = s"$life1/$life2 ($activePlayer/$turnPhase): $battleground"
 
+  def isValidAttack(attackingCreatureUids: List[Int]): Boolean =
+    attackingCreatureUids.forall(
+      uid => !battleground(attackingPlayer, uid).isTapped)
+
+
   /* State-altering methods */
+
+  def declareAttackers(attackingCreatureUids: List[Int]): GameState = {
+    if (!isValidAttack(attackingCreatureUids))
+      throw new IllegalArgumentException
+    GameState(
+      life1,
+      life2,
+      activePlayer,
+      TurnPhase.DeclareBlockers,
+      battleground.declareAttackers(attackingPlayer, attackingCreatureUids.toSet))
+  }
+
 
   def endCurrentTurn(): GameState =
     GameState(

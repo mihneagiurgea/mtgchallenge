@@ -24,6 +24,16 @@ case class Battleground(
     player1: List[Creature] = List[Creature](),
     player2: List[Creature] = List[Creature]()) {
 
+  def apply(controller: Int, index: Int): Creature = controller match {
+    case 1 => player1(index)
+    case 2 => player2(index)
+  }
+
+  def apply(controller: Int): List[Creature] = controller match {
+    case 1 => player1
+    case 2 => player2
+  }
+
   private def insertSorted[T <% Ordered[T]](ls: List[T], x: T): List[T] = {
     val (prefix, suffix) = ls.span(_ < x)
     prefix ::: x :: suffix
@@ -42,16 +52,25 @@ case class Battleground(
     case 2 => Battleground(player1, removeAt(player2, index))
   }
 
-  def creatures(controller: Int): List[Creature] = controller match {
-    case 1 => player1
-    case 2 => player2
-  }
+  def creatures(controller: Int): List[Creature] = apply(controller)
 
-  // /* State-altering methods */
+  /* State-altering methods */
+
   def untap(controller: Int): Battleground = controller match {
     case 1 => Battleground(player1.map(_.untap), player2)
     case 2 => Battleground(player1, player2.map(_.untap))
   }
+
+  def declareAttackers(
+      controller: Int, indexes: Set[Int]): Battleground = controller match {
+    case 1 => Battleground(attack(player1, indexes), player2)
+    case 2 => Battleground(player1, attack(player2, indexes))
+  }
+
+  private def attack(
+      creatures: List[Creature], indexes: Set[Int]): List[Creature] =
+    creatures.zipWithIndex.map(
+      { case (creature, idx) => if (indexes.contains(idx)) creature.attack() else creature })
 
   override def toString = s"${player1.mkString(", ")} vs ${player2.mkString(", ")}"
 }
