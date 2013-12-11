@@ -67,7 +67,7 @@ class GameStateSpec extends FlatSpec {
     assert(gameState.endCurrentTurn() === expectedGameState)
   }
 
-  it should "determine if an attack is valid" in {
+  it should "determine if an attack is valid or not" in {
     val gameState = GameState(
       battleground=Battleground.fromString("1/1 (T), 2/2 vs 3/3"))
 
@@ -83,7 +83,7 @@ class GameStateSpec extends FlatSpec {
 
   it should "declare attackers" in {
     val gameState = GameState(
-      battleground=Battleground.fromString("1/1, 2/2 vs 3/3"))
+      battleground = Battleground.fromString("1/1, 2/2 vs 3/3"))
 
     assert(gameState.declareAttackers(List(0, 1)) ===
       GameState(
@@ -95,6 +95,29 @@ class GameStateSpec extends FlatSpec {
         turnPhase = TurnPhase.DeclareBlockers,
         battleground = Battleground.fromString("1/1, 2/2 (TA) vs 3/3")))
   }
+
+  it should "determine if a blocking assignment is valid or not" in {
+    val gameState = GameState(
+      turnPhase = TurnPhase.DeclareBlockers,
+      battleground = Battleground.fromString("1/1 (TA), 2/2 vs 1/1 (T), 2/2"))
+
+    assert(gameState.isValidBlock(Map[Int, Int]()))
+    assert(gameState.isValidBlock(Map(1 -> 0)))
+    assert(!gameState.isValidBlock(Map(1 -> 1)))
+    assert(!gameState.isValidBlock(Map(0 -> 0)))
+  }
+
+  it should "declare blockers" in {
+    val gameState = GameState(
+      turnPhase = TurnPhase.DeclareBlockers,
+      battleground = Battleground.fromString("1/1 (TA), 2/2 (TA) vs 3/3"))
+
+    assert(gameState.declareBlockers(Map(0 -> 1)) ===
+      GameState(
+        turnPhase = TurnPhase.CombatStep,
+        battleground = Battleground.fromString("1/1 (TA), 2/2 (TA) vs 3/3 (B#1)")))
+  }
+
 
   def assertIsSerializable(gameState: GameState): Unit =
     assert(gameState === GameState.fromString(gameState.toString))

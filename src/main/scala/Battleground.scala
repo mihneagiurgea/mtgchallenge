@@ -67,10 +67,24 @@ case class Battleground(
     case 2 => Battleground(player1, attack(player2, indexes))
   }
 
+  def declareBlockers(
+      controller: Int, blockingAssignment: Map[Int, Int]): Battleground = controller match {
+    case 1 => Battleground(block(player1, blockingAssignment), player2)
+    case 2 => Battleground(player1, block(player2, blockingAssignment))
+  }
+
   private def attack(
       creatures: List[Creature], indexes: Set[Int]): List[Creature] =
     creatures.zipWithIndex.map(
-      { case (creature, idx) => if (indexes.contains(idx)) creature.attack() else creature })
+      { case (creature, idx) =>
+          if (indexes.contains(idx)) creature.attack() else creature })
+
+  private def block(
+      creatures: List[Creature], blockingAssignment: Map[Int, Int]): List[Creature] =
+    creatures.zipWithIndex.map(
+      { case (creature, idx) =>
+          if (blockingAssignment.contains(idx)) creature.block(blockingAssignment(idx))
+          else creature })
 
   override def toString = s"${player1.mkString(", ")} vs ${player2.mkString(", ")}"
 }

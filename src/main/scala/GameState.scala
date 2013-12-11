@@ -60,11 +60,17 @@ case class GameState(
     attackingCreatureUids.forall(
       uid => !battleground(attackingPlayer, uid).isTapped)
 
+  def isValidBlock(blockingAssignment: Map[Int, Int]): Boolean =
+    blockingAssignment.forall({ case (blockerIdx, blockedIdx) =>
+      !battleground(defendingPlayer, blockerIdx).isTapped &&
+      battleground(attackingPlayer, blockedIdx).isAttacking
+    })
 
   /* State-altering methods */
 
   def declareAttackers(attackingCreatureUids: List[Int]): GameState = {
-    if (!isValidAttack(attackingCreatureUids))
+    if (!isValidAttack(attackingCreatureUids) ||
+        turnPhase != TurnPhase.DeclareAttackers)
       throw new IllegalArgumentException
     GameState(
       life1,
@@ -74,6 +80,17 @@ case class GameState(
       battleground.declareAttackers(attackingPlayer, attackingCreatureUids.toSet))
   }
 
+  def declareBlockers(blockingAssignment: Map[Int, Int]): GameState = {
+    if (!isValidBlock(blockingAssignment) ||
+        turnPhase != TurnPhase.DeclareBlockers)
+      throw new IllegalArgumentException
+    GameState(
+      life1,
+      life2,
+      activePlayer,
+      TurnPhase.CombatStep,
+      battleground.declareBlockers(defendingPlayer, blockingAssignment))
+  }
 
   def endCurrentTurn(): GameState =
     GameState(
