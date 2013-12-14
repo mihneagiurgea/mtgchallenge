@@ -52,9 +52,17 @@ case class Battleground(
     case 2 => Battleground(player1, removeAt(player2, index))
   }
 
+  def removeMany(indexes1: List[Int], indexes2: List[Int]): Battleground = {
+    val set1 = indexes1.toSet
+    val set2 = indexes2.toSet
+    Battleground(
+      player1.zipWithIndex.filter(x => !set1.contains(x._2)).map(_._1),
+      player2.zipWithIndex.filter(x => !set2.contains(x._2)).map(_._1))
+  }
+
   def creatures(controller: Int): List[Creature] = apply(controller)
 
-  /* State-altering methods */
+  /* TurnPhase-related logic */
 
   def untap(controller: Int): Battleground = controller match {
     case 1 => Battleground(player1.map(_.untap), player2)
