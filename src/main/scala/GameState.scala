@@ -1,5 +1,6 @@
 package main.scala
 
+import scala.collection.mutable.MutableList
 import scala.util.matching.Regex
 import Outcome._
 import TurnPhase._
@@ -74,9 +75,8 @@ case class GameState(
     val attackerIndexes = battleground(attackingPlayer).zipWithIndex.
       filter(_._1.isAttacking).map(_._2)
     attackerIndexes.filter(!grouped.contains(_)).foldLeft(grouped)(
-      (map, idx) => if (map.contains(idx)) map else map.updated(idx, List[Int]()))
+      (map, idx) => map.updated(idx, List[Int]()))
   }
-
 
   /* State-altering methods */
 
@@ -102,6 +102,47 @@ case class GameState(
       activePlayer,
       TurnPhase.CombatStep,
       battleground.declareBlockers(defendingPlayer, blockingAssignment))
+  }
+
+  // TODO - make combatAssignment a List instead of a Map?
+  def resolveCombat(combatAssignment: Map[Int, List[Int]]): GameState = {
+    // TODO - validate combatAssignment?
+
+    // Breaking out of pure functional style. TODO - ƒix this.
+    var defenderDamage = 0
+    var deadAttackers = MutableList[Int]()
+    var deadBlockers = MutableList[Int]()
+
+    for ( (attackerIdx, blockers) <- combatAssignment ) {
+      val attacker = battleground(attackingPlayer)(attackerIdx)
+      if (blockers.length == 0)
+        defenderDamage += attacker.power
+      else {
+        var attackerPower = attacker.power
+        var blockersTotalPower = 0
+
+        for (blockerIdx <- blockers) {
+          val blocker = battleground(defendingPlayer)(blockerIdx)
+
+          blockersTotalPower += blocker.power
+          if (attackerPower >= blocker.toughness) {
+            deadBlockers += blockerIdx
+            attackerPower -= blocker.toughness
+          }
+        }
+
+        // Will the attacker die?
+        if (blockersTotalPower >= attacker.toughness)
+          deadAttackers += attackerIdx
+      }
+    }
+
+    GameState(
+      life1,
+      life2 - defenderDamage,
+      defendingPlayer,
+      DeclareAttackers,
+      battleground.removeMany(deadAttackers, deadBlockers).removeAllFromCombat())
   }
 
   def endCurrentTurn(): GameState =

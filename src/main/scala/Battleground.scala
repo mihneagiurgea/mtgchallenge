@@ -52,7 +52,7 @@ case class Battleground(
     case 2 => Battleground(player1, removeAt(player2, index))
   }
 
-  def removeMany(indexes1: List[Int], indexes2: List[Int]): Battleground = {
+  def removeMany(indexes1: Seq[Int], indexes2: Seq[Int]): Battleground = {
     val set1 = indexes1.toSet
     val set2 = indexes2.toSet
     Battleground(
@@ -80,6 +80,12 @@ case class Battleground(
     case 1 => Battleground(block(player1, blockingAssignment), player2)
     case 2 => Battleground(player1, block(player2, blockingAssignment))
   }
+
+  // TODO - improve performance my merging this with removeMany usage
+  def removeAllFromCombat(): Battleground =
+    Battleground(
+      player1.map(_.removeFromCombat()),
+      player2.map(_.removeFromCombat()))
 
   private def attack(
       creatures: List[Creature], indexes: Set[Int]): List[Creature] =
