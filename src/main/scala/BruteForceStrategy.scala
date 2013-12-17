@@ -1,65 +1,49 @@
 package main.scala
 
+import Combinatorics._
 import TurnPhase._
 
 case class BruteForceStrategy() {
 
+  private val NO_BLOCK_INDEX = -1
+
   def getNextStates(
       gameState: GameState): Iterator[GameState] = gameState.turnPhase match {
     case TurnPhase.DeclareAttackers => getNextStatesWhenAttacking(gameState)
-    case TurnPhase.DeclareBlockers => getNextStatesDuringCombatStep(gameState)
+    case TurnPhase.DeclareBlockers => getNextStatesWhenBlocking(gameState)
     case TurnPhase.CombatStep => getNextStatesDuringCombatStep(gameState)
   }
 
   private def getNextStatesWhenAttacking(
       gameState: GameState): Iterator[GameState] = {
-    val canAttackWithIndex =
-      gameState.filterAttackingPlayerCreaturesWithIndex(!_.isTapped)
-    // val creaturesWithIndex = gameState.attackingPlayerCreatures.zipWithIndex
-    // val canAttackWithIndex = creaturesWithIndex.filter(x => !x._1.isTapped)
-    val canAttackIndexes = canAttackWithIndex.map(_._2).toSet
+    val canAttackIndexes =
+      gameState.filterAttackingPlayerCreatureIndexes(!_.isTapped).toSet
     for (subset <- canAttackIndexes.subsets)
       yield gameState.declareAttackers(subset.toList)
   }
 
   private def getNextStatesWhenBlocking(
       gameState: GameState): Iterator[GameState] = {
-    Iterator[GameState]()
+    val attackingIndexes =
+      gameState.filterAttackingPlayerCreatureIndexes(_.isAttacking)
+    val canDefendIndexes =
+      gameState.filterDefendingPlayerCreatureIndexes(!_.isTapped)
+
+    // Generate all possible blocking assignments, by adding a "-1" index
+    // marking a fake attacker (representing a "no block").
+    val iterator = Combinatorics.getAllMappings(
+      canDefendIndexes.toIndexedSeq,
+      (NO_BLOCK_INDEX :: attackingIndexes).toIndexedSeq)
+    iterator.toIterator.map(mapping => {
+      // Remove NO_BLOCK_UID from mapping.
+      val fixedMapping = mapping.filterNot( { case (k, value) => value == -1 } )
+      gameState.declareBlockers(fixedMapping)
+    })
   }
 
   private def getNextStatesDuringCombatStep(
       gameState: GameState): Iterator[GameState] = {
     Iterator[GameState]()
   }
-
-/*
-
-    def _get_next_states_when_blocking(self, state):
-        # What creatures can block / what creatures are attacking?
-        attacking_creature_uids = []
-        blocking_creatures_uids = []
-        for uid, creature in state.battleground.creatures_with_uids:
-            if (creature.controlling_player == state.defending_player and
-                    not creature.tapped):
-                blocking_creatures_uids.append(uid)
-            elif creature.attacking:
-                attacking_creature_uids.append(uid)
-        # Generate all possible blocking assignments, by adding a "0" uid
-        # marking a fake attacker (representing a "no block").
-        attacking_creature_uids.append(NO_BLOCK_UID)
-        mappings_generator = \
-            combinatorics.get_all_mappings(blocking_creatures_uids,
-                                           attacking_creature_uids)
-        for mapping in mappings_generator:
-            # Remove NO_BLOCK_UID from mapping.
-            for key in mapping.keys():
-                if mapping[key] == NO_BLOCK_UID:
-                    del mapping[key]
-            next_state = state.copy()
-            next_state.declare_blockers(mapping)
-            yield next_state
-
-*/
-
 
 }
