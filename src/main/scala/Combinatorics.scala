@@ -8,9 +8,12 @@ object Combinatorics {
     * function (not necessary injective).
     */
   def getAllMappings[T](
-      domain: IndexedSeq[T], codomain: IndexedSeq[T]): Seq[Map[T, T]] = {
+      domain: Seq[T], codomain: Seq[T]): Seq[Map[T, T]] = {
     val N = domain.length
     val M = codomain.length
+    // Convert to IndexedSeq for performance reasons, because the apply
+    // operator is used mulitple times.
+    val codomanIndexedSeq = codomain.toIndexedSeq
 
     def toBase(n: Int, base: Int, digits: Int): List[Int] = digits match {
       case 0 => Nil
@@ -20,7 +23,7 @@ object Combinatorics {
     def makeMap(i: Int): Map[T, T] = {
       // Interpret i as an N-digit number in base M.
       val digits = toBase(i, M, N)
-      val functionImage = digits.map(codomain(_))
+      val functionImage = digits.map(codomanIndexedSeq(_))
       domain.zip(functionImage).toMap
     }
 

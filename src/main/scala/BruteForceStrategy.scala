@@ -31,19 +31,23 @@ case class BruteForceStrategy() {
 
     // Generate all possible blocking assignments, by adding a "-1" index
     // marking a fake attacker (representing a "no block").
-    val iterator = Combinatorics.getAllMappings(
-      canDefendIndexes.toIndexedSeq,
-      (NO_BLOCK_INDEX :: attackingIndexes).toIndexedSeq)
-    iterator.toIterator.map(mapping => {
+    val mappings = Combinatorics.getAllMappings(
+      canDefendIndexes,
+      NO_BLOCK_INDEX :: attackingIndexes)
+    for (mapping <- mappings.toIterator) yield {
       // Remove NO_BLOCK_UID from mapping.
       val fixedMapping = mapping.filterNot( { case (k, value) => value == -1 } )
       gameState.declareBlockers(fixedMapping)
-    })
+    }
   }
 
   private def getNextStatesDuringCombatStep(
       gameState: GameState): Iterator[GameState] = {
-    Iterator[GameState]()
+    val unorderedCombatAssignment = gameState.combatAssignment
+    val mappings =
+      Combinatorics.getAllShuffledMappings(unorderedCombatAssignment)
+    for (mapping <- mappings.toIterator)
+      yield gameState.resolveCombat(mapping)
   }
 
 }
