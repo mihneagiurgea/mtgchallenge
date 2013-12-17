@@ -8,12 +8,12 @@ class BruteForceStrategySpec extends FlatSpec {
 
   val NEXT_STATES_EXAMPLES = List(
       (
-        "20/20 (1/DeclareAttackers): 2/3, 4/6, 1/1 (T) vs 3/1",
+        "20/20 (1/DeclareAttackers): 2/3, 4/6, 1/1 (T) vs 3/1, 1/1 (T)",
         Seq(
-          "20/20 (2/DeclareAttackers): 2/3, 4/6, 1/1 (T) vs 3/1",
-          "20/20 (1/DeclareBlockers): 2/3 (TA), 4/6, 1/1 (T) vs 3/1",
-          "20/20 (1/DeclareBlockers): 2/3, 4/6 (TA), 1/1 (T) vs 3/1",
-          "20/20 (1/DeclareBlockers): 2/3 (TA), 4/6 (TA), 1/1 (T) vs 3/1"
+          "20/20 (2/DeclareAttackers): 2/3, 4/6, 1/1 (T) vs 3/1, 1/1",
+          "20/20 (1/DeclareBlockers): 2/3 (TA), 4/6, 1/1 (T) vs 3/1, 1/1 (T)",
+          "20/20 (1/DeclareBlockers): 2/3, 4/6 (TA), 1/1 (T) vs 3/1, 1/1 (T)",
+          "20/20 (1/DeclareBlockers): 2/3 (TA), 4/6 (TA), 1/1 (T) vs 3/1, 1/1 (T)"
         )
       ),
       (

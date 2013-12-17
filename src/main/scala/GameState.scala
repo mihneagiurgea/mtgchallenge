@@ -55,6 +55,9 @@ case class GameState(
         else Outcome.Win
       }
 
+  def attackingPlayerCreatures = battleground(attackingPlayer)
+  def defendingingPlayerCreatures = battleground(defendingPlayer)
+
   override def toString = s"$life1/$life2 ($activePlayer/$turnPhase): $battleground"
 
   def isValidAttack(attackingCreatureUids: List[Int]): Boolean =
@@ -84,12 +87,16 @@ case class GameState(
     if (!isValidAttack(attackingCreatureUids) ||
         turnPhase != TurnPhase.DeclareAttackers)
       throw new IllegalArgumentException
-    GameState(
-      life1,
-      life2,
-      activePlayer,
-      TurnPhase.DeclareBlockers,
-      battleground.declareAttackers(attackingPlayer, attackingCreatureUids.toSet))
+    attackingCreatureUids match {
+      case Nil => endCurrentTurn()
+      case _ =>
+        GameState(
+          life1,
+          life2,
+          attackingPlayer,
+          TurnPhase.DeclareBlockers,
+          battleground.declareAttackers(attackingPlayer, attackingCreatureUids.toSet))
+    }
   }
 
   def declareBlockers(blockingAssignment: Map[Int, Int]): GameState = {
