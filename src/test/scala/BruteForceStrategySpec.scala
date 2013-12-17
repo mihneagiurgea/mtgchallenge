@@ -48,7 +48,7 @@ class BruteForceStrategySpec extends FlatSpec {
   }
 
   it should "determine next states during CombatStep" in {
-    assertNextStates(NEXT_STATES_EXAMPLES(1))
+    assertNextStates(NEXT_STATES_EXAMPLES(2))
   }
 
   def assertNextStates(example: (String, Seq[String])): Unit =

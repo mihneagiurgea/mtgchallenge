@@ -55,6 +55,14 @@ case class GameState(
         else Outcome.Win
       }
 
+  def filterAttackingPlayerCreaturesWithIndex(
+      p: (Creature) => Boolean): List[(Creature, Int)] =
+    battleground.filterWithIndex(attackingPlayer, p)
+
+  def filterDefendingPlayerCreaturesWithIndex(
+      p: (Creature) => Boolean): List[(Creature, Int)] =
+    battleground.filterWithIndex(defendingPlayer, p)
+
   def attackingPlayerCreatures = battleground(attackingPlayer)
   def defendingingPlayerCreatures = battleground(defendingPlayer)
 
