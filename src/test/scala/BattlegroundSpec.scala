@@ -50,4 +50,14 @@ class BattlegroundSpec extends FlatSpec {
       Battleground().addCreature(c1, 1))
   }
 
+  it should "filter creatures by controller and some predicate" in {
+    val pred = (creature: Creature) => !creature.isTapped
+    assert(battleground.filter(1, pred) === List(c1, c2))
+  }
+
+  it should "filter creatures with Index by controller and some predicate" in {
+    val pred = (creature: Creature) => creature.power >= 2
+    assert(battleground.filterWithIndex(1, pred) ===  List((c2, 1)))
+  }
+
 }

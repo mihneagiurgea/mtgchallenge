@@ -34,6 +34,13 @@ case class Battleground(
     case 2 => player2
   }
 
+  def filter(controller: Int, p: (Creature) ⇒ Boolean): List[Creature] =
+    this(controller).filter(p)
+
+  def filterWithIndex(
+      controller: Int, p: (Creature) => Boolean): List[(Creature, Int)] =
+    this(controller).zipWithIndex.filter({ case (creature, _) => p(creature) })
+
   private def insertSorted[T <% Ordered[T]](ls: List[T], x: T): List[T] = {
     val (prefix, suffix) = ls.span(_ < x)
     prefix ::: x :: suffix
