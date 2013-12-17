@@ -28,4 +28,25 @@ object Combinatorics {
     (0 until nrMappings).map(makeMap(_))
   }
 
+  /** Given a Mapping[T, List[U]], return all mappings m such that:
+    *   m.keys() === mapping.keys()
+    *   set(m[k]) === set(mapping[k]), forAll k in m
+    */
+  def getAllShuffledMappings[T, U](
+      mapping: Map[T, List[U]]): Seq[Map[T, List[U]]] = {
+
+    def f(keys: List[T]): Seq[Map[T, List[U]]] = keys match {
+      case Nil => Seq( Map[T, List[U]]() )
+      case key :: tail => {
+          val prevs = f(tail)
+          val permutationsAtKey = mapping(key).permutations
+          val iterator = permutationsAtKey.flatMap(
+            permutation => prevs.map(m => m + (key -> permutation)) )
+          iterator.toSeq
+      }
+    }
+
+    f(mapping.keys.toList)
+  }
+
 }
