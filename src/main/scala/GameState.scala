@@ -43,6 +43,7 @@ case class GameState(
   def nextToAct: Int =
     if (turnPhase == TurnPhase.DeclareBlockers) defendingPlayer
     else attackingPlayer
+  def secondToAct: Int = 3 - nextToAct
 
   def isOver: Boolean = life1 <= 0 || life2 <= 0
   def isLeaf: Boolean = isOver
