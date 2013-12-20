@@ -3,7 +3,7 @@ package main.scala
 import scala.collection.mutable.{Set => MutableSet, Map => MutableMap}
 import Outcome._
 
-case class GameSolver[T <: GameNode](strategy: GameGraph[T]) {
+case class GameSolver[T <: GameNode](getNextStates: (T) => Iterator[T]) {
 
   // Current implementation uses mutable collections.
   // TODO - convert to purely functional
@@ -23,7 +23,7 @@ case class GameSolver[T <: GameNode](strategy: GameGraph[T]) {
               nodeToOutcome(node)
             else {
               // BackEdge => there is a cycle containing parent and node.
-              println(s"BackEdge $node -> $parent")
+              // println(s"BackEdge $node -> $parent")
               Outcome.Draw
             }
         } else
@@ -41,7 +41,7 @@ case class GameSolver[T <: GameNode](strategy: GameGraph[T]) {
       if (node.isLeaf) node.outcome
       else {
         // TODO - optimize by stopping when finding an Outcome.Win
-        strategy.getNextStates(node).foldLeft(Outcome.Loss)(
+        getNextStates(node).foldLeft(Outcome.Loss)(
           (outcome, next) => {
             // println(s"\t$node -> $next")
             val o = computeOutcome(next, node)

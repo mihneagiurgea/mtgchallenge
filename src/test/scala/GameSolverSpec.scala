@@ -5,6 +5,8 @@ import main.scala.BruteForceStrategy
 import main.scala.GameSolver
 import main.scala.GameState
 import main.scala.Outcome
+import main.scala.Outcome._
+import main.scala.GameNode
 
 class GameSolverSpec extends FlatSpec {
 
@@ -21,12 +23,68 @@ class GameSolverSpec extends FlatSpec {
     ("20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 5/5, 5/5", Outcome.Loss)
   )
 
-  "GameSolver" should "determine the outcome of a given GameState" in {
+  case class Node(
+      nextToAct: Int, outcome: Outcome = Outcome.NotOver)
+    extends GameNode {
+
+    def isLeaf = outcome != Outcome.NotOver
+  }
+
+  "GameSolver" should "determine outcomes in a directed acyclical graph" in {
+    val n1 = Node(1)
+    val n2 = Node(2)
+    val n4 = Node(2, Outcome.Loss)
+    val n3 = Node(1, Outcome.Loss)
+
+    val edges = Map[Node, Iterator[Node]](
+      n1 -> Iterator(n2, n4),
+      n2 -> Iterator(n3)
+    )
+
+    val solver = GameSolver(edges)
+    assert(solver.solve(n1) === Outcome.Win)
+    assert(solver.nodeToOutcome(n2) === Outcome.Win)
+  }
+
+  it should "determine outcomes in a directed cyclical graph" in {
+    val n1 = Node(1)
+    val n2 = Node(2)
+    val n3 = Node(2, Outcome.Loss)
+
+    val edges = Map[Node, Iterator[Node]](
+      n1 -> Iterator(n2, n3),
+      n2 -> Iterator(n1)
+    )
+
+    val solver = GameSolver(edges)
+    assert(solver.solve(n1) === Outcome.Win)
+    assert(solver.nodeToOutcome(n2) === Outcome.Loss)
+  }
+
+  it should "determine draws in a directed cyclical graph" in {
+    val n1 = Node(1)
+    val n2 = Node(2)
+    val n3 = Node(2)
+
+    val edges = Map[Node, Iterator[Node]](
+      n1 -> Iterator(n2, n3),
+      n2 -> Iterator(n1),
+      n3 -> Iterator(n1)
+    )
+
+    val solver = GameSolver(edges)
+    assert(solver.solve(n1) === Outcome.Draw)
+    assert(solver.nodeToOutcome(n2) === Outcome.Draw)
+    assert(solver.nodeToOutcome(n3) === Outcome.Draw)
+  }
+
+  it should "determine the outcome of a given GameState" in {
     val examples =
       OutcomeExamples.map(ex => (GameState.fromString(ex._1), ex._2))
     examples.foreach(
       { case (gameState, outcome) => {
-          val solver = GameSolver(BruteForceStrategy())
+          val strategy = BruteForceStrategy()
+          val solver = GameSolver(strategy.getNextStates)
           assert(solver.solve(gameState) === outcome, s" for $gameState")
       } })
   }
