@@ -122,7 +122,8 @@ class GameSolverSpec extends FlatSpec {
           val startTime = System.currentTimeMillis()
 
           val strategy = BruteForceStrategy()
-          val solver = GameSolver(strategy.getNextStates)
+          val solver = GameSolver(
+            strategy.getNextStates, PredictingHeuristic.predictOutcome)
           val nodeToOutcome = solver.solveGraph(gameState)
 
           val duration = System.currentTimeMillis() - startTime
