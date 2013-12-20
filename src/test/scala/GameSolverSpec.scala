@@ -123,9 +123,17 @@ class GameSolverSpec extends FlatSpec {
       OutcomeExamples.map(ex => (GameState.fromString(ex._1), ex._2))
     examples.foreach(
       { case (gameState, outcome) => {
+          val startTime = System.currentTimeMillis()
+
           val strategy = BruteForceStrategy()
           val solver = GameSolver(strategy.getNextStates)
-          assert(solver.solve(gameState) === outcome, s" for $gameState")
+          val nodeToOutcome = solver.solveGraph(gameState)
+
+          val duration = System.currentTimeMillis() - startTime
+
+          assert(nodeToOutcome(gameState) === outcome, s" for $gameState")
+          if (duration > 50)
+            info(f"solved graph size ${nodeToOutcome.size}%,8d nodes in ${duration}%,5d ms")
       } })
   }
 
