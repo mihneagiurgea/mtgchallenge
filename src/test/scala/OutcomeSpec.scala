@@ -12,9 +12,16 @@ class OutcomeSpec extends FlatSpec {
   }
 
   it should "determine the best outcome between two" in {
+    assert(Outcome.max(Outcome.Loss, Outcome.Loss) === Outcome.Loss)
     assert(Outcome.max(Outcome.Loss, Outcome.Draw) === Outcome.Draw)
+    assert(Outcome.max(Outcome.Loss, Outcome.Win) === Outcome.Win)
+
     assert(Outcome.max(Outcome.Draw, Outcome.Loss) === Outcome.Draw)
+    assert(Outcome.max(Outcome.Draw, Outcome.Draw) === Outcome.Draw)
     assert(Outcome.max(Outcome.Draw, Outcome.Win) === Outcome.Win)
+
+    assert(Outcome.max(Outcome.Win, Outcome.Loss) === Outcome.Win)
     assert(Outcome.max(Outcome.Win, Outcome.Draw) === Outcome.Win)
+    assert(Outcome.max(Outcome.Win, Outcome.Win) === Outcome.Win)
   }
 }
