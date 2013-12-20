@@ -36,7 +36,7 @@ case class GameSolver[T <: GameNode](outgoingEdges: (T) => Iterator[T]) {
     }
   }
 
-  def solve(root: T): Outcome = {
+  def solveGraph(root: T): Map[T, Outcome] = {
     dfs(root)
 
     // Reset visited to use as an indicator of which elements have been
@@ -75,8 +75,11 @@ case class GameSolver[T <: GameNode](outgoingEdges: (T) => Iterator[T]) {
     outgoingDegree.keys.filterNot(nodeToOutcome.contains(_)).map(
       nodeToOutcome(_) = Outcome.Draw)
 
-    nodeToOutcome(root)
+    nodeToOutcome.toMap
   }
+
+  def solve(root: T): Outcome =
+    solveGraph(root)(root)
 
 }
 

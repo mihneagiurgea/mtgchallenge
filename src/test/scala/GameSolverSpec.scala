@@ -24,47 +24,57 @@ class GameSolverSpec extends FlatSpec {
   )
 
   case class Node(
-      nextToAct: Int, outcome: Outcome = Outcome.NotOver)
+      label: Int, nextToAct: Int, outcome: Outcome = Outcome.NotOver)
     extends GameNode {
 
     def isLeaf = outcome != Outcome.NotOver
   }
 
   "GameSolver" should "determine outcomes in a directed acyclical graph" in {
-    val n1 = Node(1)
-    val n2 = Node(2)
-    val n4 = Node(2, Outcome.Loss)
-    val n3 = Node(1, Outcome.Loss)
+    val n1 = Node(1, 1)
+    val n2 = Node(2, 2)
+    val n4 = Node(3, 2, Outcome.Loss)
+    val n3 = Node(4, 1, Outcome.Loss)
 
     val edges = Map[Node, Iterator[Node]](
       n1 -> Iterator(n2, n4),
       n2 -> Iterator(n3)
     )
 
+    val expectedOutcomes = Map(
+      n1 -> Outcome.Win,
+      n2 -> Outcome.Win,
+      n3 -> Outcome.Loss,
+      n4 -> Outcome.Loss
+    )
     val solver = GameSolver(edges)
-    assert(solver.solve(n1) === Outcome.Win)
-    assert(solver.nodeToOutcome(n2) === Outcome.Win)
+    assert(solver.solveGraph(n1) === expectedOutcomes)
   }
 
   it should "determine outcomes in a directed cyclical graph" in {
-    val n1 = Node(1)
-    val n2 = Node(2)
-    val n3 = Node(2, Outcome.Loss)
+    val n1 = Node(1, 1)
+    val n2 = Node(2, 2)
+    val n3 = Node(3, 2, Outcome.Loss)
 
     val edges = Map[Node, Iterator[Node]](
       n1 -> Iterator(n2, n3),
       n2 -> Iterator(n1)
     )
 
+    val expectedOutcomes = Map(
+      n1 -> Outcome.Win,
+      n2 -> Outcome.Loss,
+      n3 -> Outcome.Loss
+    )
+
     val solver = GameSolver(edges)
-    assert(solver.solve(n1) === Outcome.Win)
-    assert(solver.nodeToOutcome(n2) === Outcome.Loss)
+    assert(solver.solveGraph(n1) === expectedOutcomes)
   }
 
   it should "determine draws in a directed cyclical graph - scenario 1" in {
-    val n1 = Node(1)
-    val n2 = Node(2)
-    val n3 = Node(2)
+    val n1 = Node(1, 1)
+    val n2 = Node(2, 2)
+    val n3 = Node(3, 2)
 
     val edges = Map[Node, Iterator[Node]](
       n1 -> Iterator(n2, n3),
@@ -72,18 +82,22 @@ class GameSolverSpec extends FlatSpec {
       n3 -> Iterator(n1)
     )
 
+    val expectedOutcomes = Map(
+      n1 -> Outcome.Draw,
+      n2 -> Outcome.Draw,
+      n3 -> Outcome.Draw
+    )
+
     val solver = GameSolver(edges)
-    assert(solver.solve(n1) === Outcome.Draw)
-    assert(solver.nodeToOutcome(n2) === Outcome.Draw)
-    assert(solver.nodeToOutcome(n3) === Outcome.Draw)
+    assert(solver.solveGraph(n1) === expectedOutcomes)
   }
 
   it should "determine draws in a directed cyclical graph - scenario 2" in {
-    val n1 = Node(1)
-    val n2 = Node(2)
-    val n3 = Node(1)
-    val n4 = Node(2)
-    val n5 = Node(2, Outcome.Win)
+    val n1 = Node(1, 1)
+    val n2 = Node(2, 2)
+    val n3 = Node(3, 1)
+    val n4 = Node(4, 2)
+    val n5 = Node(5, 2, Outcome.Win)
 
     val edges = Map[Node, Iterator[Node]](
       n1 -> Iterator(n2, n5),
@@ -92,11 +106,16 @@ class GameSolverSpec extends FlatSpec {
       n4 -> Iterator(n1)
     )
 
+    val expectedOutcomes = Map(
+      n1 -> Outcome.Draw,
+      n2 -> Outcome.Draw,
+      n3 -> Outcome.Draw,
+      n4 -> Outcome.Draw,
+      n5 -> Outcome.Win
+    )
+
     val solver = GameSolver(edges)
-    assert(solver.solve(n1) === Outcome.Draw)
-    assert(solver.nodeToOutcome(n2) === Outcome.Draw)
-    assert(solver.nodeToOutcome(n3) === Outcome.Draw)
-    assert(solver.nodeToOutcome(n4) === Outcome.Draw)
+    assert(solver.solveGraph(n1) === expectedOutcomes)
   }
 
   it should "determine the outcome of a given GameState" in {
