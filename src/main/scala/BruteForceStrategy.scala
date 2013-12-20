@@ -3,7 +3,7 @@ package main.scala
 import Combinatorics._
 import TurnPhase._
 
-case class BruteForceStrategy() {
+case class BruteForceStrategy() extends GameGraph[GameState] {
 
   private val NO_BLOCK_INDEX = -1
 

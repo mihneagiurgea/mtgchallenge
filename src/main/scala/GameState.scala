@@ -33,7 +33,8 @@ case class GameState(
     life2: Int = 20,
     activePlayer: Int = 1,
     turnPhase: TurnPhase = TurnPhase.DeclareAttackers,
-    battleground: Battleground = Battleground()) {
+    battleground: Battleground = Battleground())
+  extends GameNode {
 
   require(activePlayer == 1 || activePlayer == 2)
 
@@ -44,6 +45,7 @@ case class GameState(
     else attackingPlayer
 
   def isOver: Boolean = life1 <= 0 || life2 <= 0
+  def isLeaf: Boolean = isOver
 
   def outcome: Outcome =
     if (!isOver) Outcome.NotOver
