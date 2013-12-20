@@ -150,10 +150,9 @@ case class GameState(
           val blocker = battleground(defendingPlayer)(blockerIdx)
 
           blockersTotalPower += blocker.power
-          if (attackerPower >= blocker.toughness) {
+          attackerPower -= blocker.toughness
+          if (attackerPower >= 0)
             deadBlockers += blockerIdx
-            attackerPower -= blocker.toughness
-          }
         }
 
         // Will the attacker die?

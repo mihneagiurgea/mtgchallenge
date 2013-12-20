@@ -158,6 +158,15 @@ class GameStateSpec extends FlatSpec {
       GameState.fromString("12/20 (1/DeclareAttackers): 4/4 vs 3/3 (T), 5/5 (T)"))
   }
 
+  it should "resolve combat damage - complex scenario #2" in {
+    val gameState = GameState.fromString(
+      "20/20 (2/CombatStep): 0/7 (B#0), 4/4 (B#0), 3/3 (B#0) vs 10/10 (TA)")
+    val combatAssignment = Map(
+      0 -> List(0, 1, 2))
+    assert(gameState.resolveCombat(combatAssignment) ===
+      GameState.fromString("20/20 (1/DeclareAttackers): 4/4, 3/3 vs 10/10 (T)"))
+  }
+
   def assertIsSerializable(gameState: GameState): Unit =
     assert(gameState === GameState.fromString(gameState.toString))
 
