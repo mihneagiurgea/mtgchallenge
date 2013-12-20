@@ -4,7 +4,16 @@ import scala.collection.mutable.{Queue => MutableQueue,
   Set => MutableSet, Map => MutableMap, MutableList}
 import Outcome._
 
-case class GameSolver[T <: GameNode](outgoingEdges: (T) => Iterator[T]) {
+object GameSolver {
+
+  def defaultPredictOutcome[T <: GameNode](node: T): Outcome =
+    if (node.isLeaf) node.outcome
+    else Outcome.NotOver
+}
+
+case class GameSolver[T <: GameNode](
+    outgoingEdges: (T) => Iterator[T],
+    predictOutcome: (T) => Outcome = GameSolver.defaultPredictOutcome[T] _) {
 
   type Graph = MutableMap[T, List[T]]
 
@@ -16,9 +25,10 @@ case class GameSolver[T <: GameNode](outgoingEdges: (T) => Iterator[T]) {
 
   private def dfs(node: T): Unit = {
     visited.add(node)
-    if (node.isLeaf) {
+    val outcome = predictOutcome(node)
+    if (outcome != Outcome.NotOver) {
       queue.enqueue(node)
-      nodeToOutcome(node) = node.outcome
+      nodeToOutcome(node) = outcome
       return
     }
     for (next <- outgoingEdges(node)) {

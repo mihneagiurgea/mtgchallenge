@@ -1,12 +1,8 @@
 package test.scala
 
 import org.scalatest.FlatSpec
-import main.scala.BruteForceStrategy
-import main.scala.GameSolver
-import main.scala.GameState
-import main.scala.Outcome
+import main.scala._
 import main.scala.Outcome._
-import main.scala.GameNode
 
 class GameSolverSpec extends FlatSpec {
 
@@ -19,8 +15,8 @@ class GameSolverSpec extends FlatSpec {
     ("20/20 (1/CombatStep): 10/10 vs 3/3", Outcome.Win),
     ("20/20 (2/DeclareAttackers): 10/10 vs 3/3", Outcome.Loss),
     ("20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3", Outcome.Draw),
-    ("20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3, 1/1", Outcome.Draw)
-    // ("20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 5/5, 5/5", Outcome.Loss)
+    ("20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3, 1/1", Outcome.Draw),
+    ("20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 3/3, 1/1", Outcome.Loss)
   )
 
   case class Node(
@@ -132,8 +128,10 @@ class GameSolverSpec extends FlatSpec {
           val duration = System.currentTimeMillis() - startTime
 
           assert(nodeToOutcome(gameState) === outcome, s" for $gameState")
-          if (duration > 50)
-            info(f"solved graph size ${nodeToOutcome.size}%,8d nodes in ${duration}%,5d ms")
+          if (duration > 50) {
+            info(f"solved $gameState")
+            info(f"graph size ${nodeToOutcome.size}%,8d nodes in ${duration}%,5d ms")
+          }
       } })
   }
 
