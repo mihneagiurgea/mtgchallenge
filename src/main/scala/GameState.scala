@@ -130,17 +130,19 @@ case class GameState(
   // TODO - make combatAssignment a List instead of a Map?
   def resolveCombat(combatAssignment: Map[Int, List[Int]]): GameState = {
     // TODO - validate combatAssignment?
-
     // Breaking out of pure functional style. TODO - ƒix this.
+
     var defenderDamage = 0
-    var deadAttackers = MutableList[Int]()
-    var deadBlockers = MutableList[Int]()
+    val deadAttackers = MutableList[Int]()
+    val deadBlockers = MutableList[Int]()
 
     for ( (attackerIdx, blockers) <- combatAssignment ) {
       val attacker = battleground(attackingPlayer)(attackerIdx)
       if (blockers.length == 0)
+        // Unblocked attacked, deal damage to defending player.
         defenderDamage += attacker.power
       else {
+        // Blocked attacked, deal damage to defending creatures, in order.
         var attackerPower = attacker.power
         var blockersTotalPower = 0
 
@@ -160,12 +162,20 @@ case class GameState(
       }
     }
 
-    GameState(
-      life1,
-      life2 - defenderDamage,
-      defendingPlayer,
-      DeclareAttackers,
-      battleground.removeMany(deadAttackers, deadBlockers).removeAllFromCombat())
+    if (attackingPlayer == 1)
+      GameState(
+        life1,
+        life2 - defenderDamage,
+        defendingPlayer,
+        DeclareAttackers,
+        battleground.removeMany(deadAttackers, deadBlockers).removeAllFromCombat())
+    else
+      GameState(
+        life1 - defenderDamage,
+        life2,
+        defendingPlayer,
+        DeclareAttackers,
+        battleground.removeMany(deadBlockers, deadAttackers).removeAllFromCombat())
   }
 
   def endCurrentTurn(): GameState =
