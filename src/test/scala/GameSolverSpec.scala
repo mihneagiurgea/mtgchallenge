@@ -61,7 +61,7 @@ class GameSolverSpec extends FlatSpec {
     assert(solver.nodeToOutcome(n2) === Outcome.Loss)
   }
 
-  it should "determine draws in a directed cyclical graph" in {
+  it should "determine draws in a directed cyclical graph - scenario 1" in {
     val n1 = Node(1)
     val n2 = Node(2)
     val n3 = Node(2)
@@ -76,6 +76,27 @@ class GameSolverSpec extends FlatSpec {
     assert(solver.solve(n1) === Outcome.Draw)
     assert(solver.nodeToOutcome(n2) === Outcome.Draw)
     assert(solver.nodeToOutcome(n3) === Outcome.Draw)
+  }
+
+  it should "determine draws in a directed cyclical graph - scenario 2" in {
+    val n1 = Node(1)
+    val n2 = Node(2)
+    val n3 = Node(1)
+    val n4 = Node(2)
+    val n5 = Node(2, Outcome.Win)
+
+    val edges = Map[Node, Iterator[Node]](
+      n1 -> Iterator(n2, n5),
+      n2 -> Iterator(n3),
+      n3 -> Iterator(n4),
+      n4 -> Iterator(n1)
+    )
+
+    val solver = GameSolver(edges)
+    assert(solver.solve(n1) === Outcome.Draw)
+    assert(solver.nodeToOutcome(n2) === Outcome.Draw)
+    assert(solver.nodeToOutcome(n3) === Outcome.Draw)
+    assert(solver.nodeToOutcome(n4) === Outcome.Draw)
   }
 
   it should "determine the outcome of a given GameState" in {
