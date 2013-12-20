@@ -163,20 +163,20 @@ case class GameState(
       }
     }
 
-    if (attackingPlayer == 1)
-      GameState(
-        life1,
-        life2 - defenderDamage,
-        defendingPlayer,
-        DeclareAttackers,
-        battleground.removeMany(deadAttackers, deadBlockers).removeAllFromCombat())
-    else
-      GameState(
-        life1 - defenderDamage,
-        life2,
-        defendingPlayer,
-        DeclareAttackers,
-        battleground.removeMany(deadBlockers, deadAttackers).removeAllFromCombat())
+    // Determine which player takes damage and what creatures die, depending
+    // on attacking player.
+    val (damage1, damage2, deadCreatures1, deadCreatures2) =
+      if (attackingPlayer == 1)
+        (0, defenderDamage, deadAttackers, deadBlockers)
+      else
+        (defenderDamage, 0, deadBlockers, deadAttackers)
+    GameState(
+      life1 - damage1,
+      life2 - damage2,
+      defendingPlayer,
+      DeclareAttackers,
+      battleground.removeMany(deadCreatures1, deadCreatures2).
+        removeAllFromCombat().untap(defendingPlayer))
   }
 
   def endCurrentTurn(): GameState =
