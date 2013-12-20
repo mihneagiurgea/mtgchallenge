@@ -1,0 +1,19 @@
+    First version (no optimizations):
+
+[info]   + solved 20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3
+[info]   + graph size    2,794 nodes in   270 ms
+[info]   + solved 20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3, 1/1
+[info]   + graph size   27,572 nodes in 1,973 ms
+[info]   + solved 20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 3/3, 1/1
+[info]   + graph size   43,066 nodes in 1,610 ms
+
+    Improvement: use PredictingHeuristic only reduced number of nodes by
+    a small 1% :( - mostly because only a few number of such nodes could be
+    predicted
+
+[info]   + solved 20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3
+[info]   + graph size    2,640 nodes in   191 ms
+[info]   + solved 20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3, 1/1
+[info]   + graph size   26,472 nodes in 1,704 ms
+[info]   + solved 20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 3/3, 1/1
+[info]   + graph size   42,326 nodes in 1,611 ms
