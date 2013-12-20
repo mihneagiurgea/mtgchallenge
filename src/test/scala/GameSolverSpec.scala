@@ -11,16 +11,16 @@ import main.scala.GameNode
 class GameSolverSpec extends FlatSpec {
 
   val OutcomeExamples = List(
-    // ("20/20 (1/DeclareAttackers): 10/10 vs ", Outcome.Win),
-    // ("20/20 (2/DeclareAttackers): 10/10 vs ", Outcome.Loss),
+    ("20/20 (1/DeclareAttackers): 10/10 vs ", Outcome.Win),
+    ("20/20 (2/DeclareAttackers): 10/10 vs ", Outcome.Loss),
     ("11/11 (1/DeclareAttackers): 10/10 vs 9/9", Outcome.Win),
     ("20/20 (1/DeclareAttackers): 10/10 vs 3/3", Outcome.Win),
     ("20/20 (1/DeclareBlockers): 10/10 vs 3/3", Outcome.Loss),
     ("20/20 (1/CombatStep): 10/10 vs 3/3", Outcome.Win),
     ("20/20 (2/DeclareAttackers): 10/10 vs 3/3", Outcome.Loss),
     ("20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3", Outcome.Draw),
-    ("20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3, 1/1", Outcome.Draw),
-    ("20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 5/5, 5/5", Outcome.Loss)
+    ("20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3, 1/1", Outcome.Draw)
+    // ("20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 5/5, 5/5", Outcome.Loss)
   )
 
   case class Node(
