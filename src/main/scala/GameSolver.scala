@@ -1,7 +1,6 @@
 package main.scala
 
-import scala.collection.mutable.{Queue => MutableQueue,
-  Set => MutableSet, Map => MutableMap, MutableList}
+import scala.collection.mutable
 import Outcome._
 
 object GameSolver {
@@ -15,13 +14,12 @@ case class GameSolver[T <: GameNode](
     outgoingEdges: (T) => Iterator[T],
     predictOutcome: (T) => Outcome = GameSolver.defaultPredictOutcome[T] _) {
 
-  type Graph = MutableMap[T, List[T]]
-
-  val queue = MutableQueue[T]()
-  val incomingEdges = MutableMap[T, MutableList[T]]().withDefault(_ => MutableList())
-  val outgoingDegree = MutableMap[T, Int]().withDefaultValue(0)
-  val nodeToOutcome = MutableMap[T, Outcome]()
-  val visited = MutableSet[T]()
+  val queue = mutable.Queue[T]()
+  val incomingEdges = mutable.Map[T, mutable.MutableList[T]]().
+    withDefault(_ => mutable.MutableList())
+  val outgoingDegree = mutable.Map[T, Int]().withDefaultValue(0)
+  val nodeToOutcome = mutable.Map[T, Outcome]()
+  val visited = mutable.Set[T]()
 
   private def dfs(node: T): Unit = {
     visited.add(node)
@@ -36,7 +34,7 @@ case class GameSolver[T <: GameNode](
       if (incomingEdges contains next)
         incomingEdges(next) += node
       else
-        incomingEdges(next) = MutableList(node)
+        incomingEdges(next) = mutable.MutableList(node)
 
       // Increment outgoingDegree(node).
       outgoingDegree(node) += 1
