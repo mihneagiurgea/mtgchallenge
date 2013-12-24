@@ -43,9 +43,12 @@ object Creature {
 /** A stateful Creature.
   *
   * Should be constructed using the companion object.
+  * Defines an arbitrary total ordering and a "strictly better than" partial
+  * ordering.
   */
 case class Creature private(creatureCard: CreatureCard, state: Int)
-  extends Ordered[Creature] {
+  extends Ordered[Creature]
+  with PartiallyOrdered[Creature] {
 
   import Creature._
 
@@ -55,6 +58,44 @@ case class Creature private(creatureCard: CreatureCard, state: Int)
   def compare(that: Creature) =
     if (this.creatureCard == that.creatureCard) this.state - that.state
     else this.creatureCard compare that.creatureCard
+
+  def tryCompareTo[B >: Creature](that: B)
+      (implicit arg0: (B) ⇒ PartiallyOrdered[B]) =
+    tryCompareTo(that.asInstanceOf[Creature])
+
+  def tryCompareTo(that: Creature): Option[Int] = {
+    val cmpState: Option[Int] = {
+      if (this.isAttacking != that.isAttacking) None
+      else if (this.isBlocking != that.isBlocking) None
+      else
+        if (this.isTapped == that.isTapped) Option(0)
+        else
+          // If this is tapped and that is not, than this < that.
+          if (this.isTapped) Option(-1)
+          else Option(+1)
+    }
+
+    // TODO - refactor, this is duplicate code of CreatureCard.tryCompareTo
+    val cmpCreatureCard = creatureCard.tryCompareTo(that.creatureCard)
+    (cmpState, cmpCreatureCard) match {
+      case (None, _) => None
+      case (_, None) => None
+
+      // this and that are not comparable
+      case (Some(-1), Some(1)) => None
+      case (Some(1), Some(-1)) => None
+
+      // this == that
+      case (Some(0), Some(0)) => Some(0)
+
+      // this < that
+      case _ if (cmpState.get < 0 || cmpCreatureCard.get < 0) => Some(-1)
+
+      // this > that
+      case _ => Some(+1)
+    }
+
+  }
 
   // Getters for CreatureCard attributes. This implementation might
   // change as CreatureCards get more attributes (trample, flying, etc.)

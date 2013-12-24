@@ -118,4 +118,20 @@ class CreatureSpec extends FlatSpec {
     assert(List(c1, c2, c3).sorted === List(c3, c2, c1).sorted)
   }
 
+  it should "be partially ordered in regards to strictly better" in {
+    val c1 = Creature(CreatureCard(1, 3))
+    assert(c1.tryCompareTo(Creature(CreatureCard(1, 4))) === Some(-1))
+    assert(c1.tryCompareTo(Creature(CreatureCard(0, 3))) === Some(+1))
+    assert(c1.tryCompareTo(Creature(CreatureCard(1, 3))) === Some(0))
+    assert(c1.tryCompareTo(Creature(CreatureCard(2, 2))) === None)
+
+    assert(c1.tryCompareTo(
+      Creature(CreatureCard(1, 3), tapped=true)) === Some(+1))
+    assert(c1.tryCompareTo(
+      Creature(CreatureCard(1, 3), attacking=true)) === None)
+
+    assert(c1.tryCompareTo(
+      Creature(CreatureCard(2, 3), tapped=true)) === None)
+  }
+
 }
