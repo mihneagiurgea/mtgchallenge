@@ -176,7 +176,7 @@ case class GameState(
       life2 - damage2,
       defendingPlayer,
       DeclareAttackers,
-      battleground.removeMany(deadCreatures1, deadCreatures2).
+      battleground.removeMany(deadCreatures1.toSet, deadCreatures2.toSet).
         removeAllFromCombat().untap(defendingPlayer))
   }
 

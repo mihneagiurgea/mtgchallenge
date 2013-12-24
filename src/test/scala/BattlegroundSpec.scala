@@ -37,9 +37,9 @@ class BattlegroundSpec extends FlatSpec {
   }
 
   it should "remove many creatures at a time" in {
-    assert(battleground.removeMany(List(1, 0), List(0)) === Battleground())
+    assert(battleground.removeMany(Set(1, 0), Set(0)) === Battleground())
 
-    assert(battleground.removeMany(List(1), List(0)) ===
+    assert(battleground.removeMany(Set(1), Set(0)) ===
       Battleground().addCreature(c1, 1))
   }
 
