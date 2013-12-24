@@ -14,21 +14,14 @@ class BattlegroundSpec extends FlatSpec {
   val battleground =
       Battleground().addCreature(c1, 1).addCreature(c2, 1).addCreature(c3, 2)
 
-  "Battleground" should "add creatures under some player's control" in {
+  "Battleground" should "add creatures under some player's control and " +
+      "maintain a sorted order" in {
     assert(battleground ===
       Battleground().addCreature(c3, 2).addCreature(c2, 1).addCreature(c1, 1))
     assert(battleground ===
       Battleground().addCreature(c2, 1).addCreature(c1, 1).addCreature(c3, 2))
     assert(battleground ===
       Battleground().addCreature(c1, 1).addCreature(c3, 2).addCreature(c2, 1))
-  }
-
-  it should "remove creatures" in {
-    assert(battleground.removeAt(0, 1) ===
-      Battleground().addCreature(c2, 1).addCreature(c3, 2))
-
-    val empty = battleground.removeAt(0, 1).removeAt(0, 1).removeAt(0, 2)
-    assert(Battleground() === empty)
   }
 
   it should "serialize and deserialize objects" in {
@@ -39,8 +32,8 @@ class BattlegroundSpec extends FlatSpec {
   }
 
   it should "return a list of creatures under some player's control" in {
-    assert(battleground.creatures(1) === List(c1, c2))
-    assert(battleground.creatures(2) === List(c3))
+    assert(battleground(1) === List(c1, c2))
+    assert(battleground(2) === List(c3))
   }
 
   it should "remove many creatures at a time" in {
@@ -48,11 +41,6 @@ class BattlegroundSpec extends FlatSpec {
 
     assert(battleground.removeMany(List(1), List(0)) ===
       Battleground().addCreature(c1, 1))
-  }
-
-  it should "filter creatures by controller and some predicate" in {
-    val pred = (creature: Creature) => !creature.isTapped
-    assert(battleground.filter(1, pred) === List(c1, c2))
   }
 
   it should "filter creatures with Index by controller and some predicate" in {

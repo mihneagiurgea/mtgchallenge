@@ -24,18 +24,12 @@ case class Battleground(
     player1: List[Creature] = List[Creature](),
     player2: List[Creature] = List[Creature]()) {
 
-  def apply(controller: Int, index: Int): Creature = controller match {
-    case 1 => player1(index)
-    case 2 => player2(index)
-  }
+  def apply(controller: Int, index: Int): Creature = this(controller)(index)
 
   def apply(controller: Int): List[Creature] = controller match {
     case 1 => player1
     case 2 => player2
   }
-
-  def filter(controller: Int, p: (Creature) ⇒ Boolean): List[Creature] =
-    this(controller).filter(p)
 
   def filterWithIndex(
       controller: Int, p: (Creature) => Boolean): List[(Creature, Int)] =
@@ -46,17 +40,9 @@ case class Battleground(
     prefix ::: x :: suffix
   }
 
-  private def removeAt[T](ls: List[T], index: Int): List[T] =
-    ls.take(index) ::: ls.drop(index + 1)
-
   def addCreature(creature: Creature, controller: Int): Battleground = controller match {
     case 1 => Battleground(insertSorted(player1, creature), player2)
     case 2 => Battleground(player1, insertSorted(player2, creature))
-  }
-
-  def removeAt(index: Int, controller: Int): Battleground = controller match {
-    case 1 => Battleground(removeAt(player1, index), player2)
-    case 2 => Battleground(player1, removeAt(player2, index))
   }
 
   def removeMany(indexes1: Seq[Int], indexes2: Seq[Int]): Battleground = {
@@ -66,8 +52,6 @@ case class Battleground(
       player1.zipWithIndex.filter(x => !set1.contains(x._2)).map(_._1),
       player2.zipWithIndex.filter(x => !set2.contains(x._2)).map(_._1))
   }
-
-  def creatures(controller: Int): List[Creature] = apply(controller)
 
   /* TurnPhase-related logic */
 

@@ -11,7 +11,7 @@ object PredictingHeuristic {
     gameState.battleground(player).length > 0
 
   private def hasCreaturesWithPower(gameState: GameState, player: Int): Boolean =
-    gameState.battleground.filter(player, _.power > 0).length > 0
+    gameState.battleground(player).filter(_.power > 0).length > 0
 
   def predictOutcome(gameState: GameState): Outcome = {
     if (gameState.isLeaf) gameState.outcome
