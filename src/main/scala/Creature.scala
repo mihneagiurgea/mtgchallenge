@@ -75,26 +75,8 @@ case class Creature private(creatureCard: CreatureCard, state: Int)
           else Option(+1)
     }
 
-    // TODO - refactor, this is duplicate code of CreatureCard.tryCompareTo
-    val cmpCreatureCard = creatureCard.tryCompareTo(that.creatureCard)
-    (cmpState, cmpCreatureCard) match {
-      case (None, _) => None
-      case (_, None) => None
-
-      // this and that are not comparable
-      case (Some(-1), Some(1)) => None
-      case (Some(1), Some(-1)) => None
-
-      // this == that
-      case (Some(0), Some(0)) => Some(0)
-
-      // this < that
-      case _ if (cmpState.get < 0 || cmpCreatureCard.get < 0) => Some(-1)
-
-      // this > that
-      case _ => Some(+1)
-    }
-
+    StrictlyBetter.combine(cmpState,
+      creatureCard.tryCompareTo(that.creatureCard))
   }
 
   // Getters for CreatureCard attributes. This implementation might

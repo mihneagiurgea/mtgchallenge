@@ -45,24 +45,9 @@ class CreatureCard private(val power: Int, val toughness: Int)
       (implicit arg0: (B) ⇒ PartiallyOrdered[B]) =
     tryCompareTo(that.asInstanceOf[CreatureCard])
 
-  def tryCompareTo(that: CreatureCard): Option[Int] = {
-    val cmpPower = this.power - that.power
-    val cmpToughness = this.toughness - that.toughness
-    (cmpPower, cmpToughness) match {
-      // this and that are not comparable
-      case (-1, 1) => None
-      case (1, -1) => None
-
-      // this == that
-      case (0, 0) => Some(0)
-
-      // this < that
-      case _ if (cmpPower < 0 || cmpToughness < 0) => Some(-1)
-
-      // this > that
-      case _ => Some(+1)
-    }
-  }
+  def tryCompareTo(that: CreatureCard): Option[Int] =
+    StrictlyBetter.combine(this.power - that.power,
+      this.toughness - that.toughness)
 
   override def toString = s"$power/$toughness"
 }
