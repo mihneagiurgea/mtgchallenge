@@ -47,4 +47,19 @@ class PlayerBattlegroundSpec extends FlatSpec {
       PlayerBattleground(c1.block(1), c2.block(0), c3))
   }
 
+  it should "be partially ordered in regards to strictly better" in {
+    // c1 < c2, but c1 and c2 are not comparable with c3
+    assert(PlayerBattleground(c1).
+      tryCompareTo(PlayerBattleground(c2)) === Some(-1))
+    assert(PlayerBattleground(c1).
+      tryCompareTo(PlayerBattleground(c1, c1)) === Some(-1))
+    assert(PlayerBattleground(c2, c1, c2, c1, c2).
+      tryCompareTo(PlayerBattleground(c2, c1, c2, c1, c2)) === Some(0))
+    assert(PlayerBattleground(c2, c1, c2, c1, c2).
+      tryCompareTo(PlayerBattleground(c1, c2, c1, c2)) === Some(+1))
+
+    assert(PlayerBattleground(c1, c1, c2).
+      tryCompareTo(PlayerBattleground(c1, c1, c3)) === None)
+  }
+
 }

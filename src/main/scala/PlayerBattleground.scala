@@ -18,10 +18,33 @@ object PlayerBattleground {
 /** A collection for all Creatures under some player's control.
   *
   * Should be constructed using the companion object.
+  * Defines a "strictly better than" partial ordering.
   */
-case class PlayerBattleground private(creatures: List[Creature]) {
+case class PlayerBattleground private(creatures: List[Creature])
+  extends PartiallyOrdered[PlayerBattleground]{
 
   private def this() = this(Nil)
+
+  def tryCompareTo[B >: PlayerBattleground](that: B)
+      (implicit arg0: (B) ⇒ PartiallyOrdered[B]) =
+    tryCompareTo(that.asInstanceOf[PlayerBattleground])
+
+  def tryCompareTo(that: PlayerBattleground): Option[Int] = {
+
+    def f(x: List[Creature], y: List[Creature], res: Option[Int]): Option[Int] = (x, y) match {
+      case (Nil, Nil) => res
+      case (Nil, _) => StrictlyBetter.combine(res, Some(-1))
+      case (_, Nil) => StrictlyBetter.combine(res, Some(+1))
+      case (h1 :: t1, h2 :: t2) => {
+        val newRes = StrictlyBetter.combine(res, h1.tryCompareTo(h2))
+        newRes match {
+          case None => None
+          case _ => f(t1, t2, newRes)
+        }
+      }
+    }
+    f(this.creatures, that.creatures, Some(0))
+  }
 
   def + (creature: Creature): PlayerBattleground = {
     val (prefix, suffix) = creatures.span(_ < creature)
