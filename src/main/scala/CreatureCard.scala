@@ -23,9 +23,12 @@ object CreatureCard {
 /** A stateless CreatureCard.
   *
   * Should be constructed using the companion object.
+  * Defines an arbitrary total ordering and a "strictly better than" partial
+  * ordering.
   */
 class CreatureCard private(val power: Int, val toughness: Int)
-  extends Ordered[CreatureCard] {
+  extends Ordered[CreatureCard]
+  with PartiallyOrdered[CreatureCard] {
 
   require(power >= 0)
   require(toughness >= 0)
@@ -36,6 +39,29 @@ class CreatureCard private(val power: Int, val toughness: Int)
 
     if (this_size == that_size) this.power - that.power
     else this_size - that_size
+  }
+
+  def tryCompareTo[B >: CreatureCard](that: B)
+      (implicit arg0: (B) ⇒ PartiallyOrdered[B]) =
+    tryCompareTo(that.asInstanceOf[CreatureCard])
+
+  def tryCompareTo(that: CreatureCard): Option[Int] = {
+    val cmpPower = this.power - that.power
+    val cmpToughness = this.toughness - that.toughness
+    (cmpPower, cmpToughness) match {
+      // this and that are not comparable
+      case (-1, 1) => None
+      case (1, -1) => None
+
+      // this == that
+      case (0, 0) => Some(0)
+
+      // this < that
+      case _ if (cmpPower < 0 || cmpToughness < 0) => Some(-1)
+
+      // this > that
+      case _ => Some(+1)
+    }
   }
 
   override def toString = s"$power/$toughness"

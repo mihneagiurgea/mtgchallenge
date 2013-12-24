@@ -48,4 +48,16 @@ class CreatureCardSpec extends FlatSpec {
 
     assert(List(a, b, c).sorted === List(c, b, a))
   }
+
+  it should "be partially ordered in regards to strictly better" in {
+    assert(
+      CreatureCard(1, 3).tryCompareTo(CreatureCard(1, 4)) === Some(-1))
+    assert(
+      CreatureCard(1, 3).tryCompareTo(CreatureCard(0, 3)) === Some(+1))
+    assert(
+      CreatureCard(1, 3).tryCompareTo(CreatureCard(1, 3)) === Some(0))
+    assert(
+      CreatureCard(1, 3).tryCompareTo(CreatureCard(2, 2)) === None)
+  }
+
 }
