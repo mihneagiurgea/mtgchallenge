@@ -75,13 +75,13 @@ class GameStateSpec extends FlatSpec {
     val gameState = GameState(
       battleground=Battleground.fromString("1/1 (T), 2/2 vs 3/3"))
 
-    assert(gameState.isValidAttack(List()))
-    assert(gameState.isValidAttack(List(1)))
-    assert(!gameState.isValidAttack(List(0)))
-    assert(!gameState.isValidAttack(List(0, 1)))
+    assert(gameState.isValidAttack(Set()))
+    assert(gameState.isValidAttack(Set(1)))
+    assert(!gameState.isValidAttack(Set(0)))
+    assert(!gameState.isValidAttack(Set(0, 1)))
 
     intercept[IndexOutOfBoundsException] {
-      assert(!gameState.isValidAttack(List(2)))
+      assert(!gameState.isValidAttack(Set(2)))
     }
   }
 
@@ -89,12 +89,12 @@ class GameStateSpec extends FlatSpec {
     val gameState = GameState(
       battleground = Battleground.fromString("1/1, 2/2 vs 3/3"))
 
-    assert(gameState.declareAttackers(List(0, 1)) ===
+    assert(gameState.declareAttackers(Set(0, 1)) ===
       GameState(
         turnPhase = TurnPhase.DeclareBlockers,
         battleground = Battleground.fromString("1/1 (TA), 2/2 (TA) vs 3/3")))
 
-    assert(gameState.declareAttackers(List(1)) ===
+    assert(gameState.declareAttackers(Set(1)) ===
       GameState(
         turnPhase = TurnPhase.DeclareBlockers,
         battleground = Battleground.fromString("1/1, 2/2 (TA) vs 3/3")))

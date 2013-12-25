@@ -19,7 +19,7 @@ case class BruteForceStrategy() extends GameGraph[GameState] {
     val canAttackIndexes =
       gameState.filterAttackingPlayerCreatureIndexes(!_.isTapped).toSet
     for (subset <- canAttackIndexes.subsets)
-      yield gameState.declareAttackers(subset.toList)
+      yield gameState.declareAttackers(subset)
   }
 
   private def getNextStatesWhenBlocking(

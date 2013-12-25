@@ -118,7 +118,7 @@ case class GameState(
     }
   }
 
-  def isValidAttack(attackingCreatureUids: List[Int]): Boolean =
+  def isValidAttack(attackingCreatureUids: Set[Int]): Boolean =
     attackingCreatureUids.forall(
       uid => !battleground(attackingPlayer, uid).isTapped)
 
@@ -141,20 +141,19 @@ case class GameState(
 
   /* State-altering methods */
 
-  def declareAttackers(attackingCreatureUids: List[Int]): GameState = {
+  def declareAttackers(attackingCreatureUids: Set[Int]): GameState = {
     if (!isValidAttack(attackingCreatureUids) ||
         turnPhase != TurnPhase.DeclareAttackers)
       throw new IllegalArgumentException
-    attackingCreatureUids match {
-      case Nil => endCurrentTurn()
-      case _ =>
-        GameState(
-          life1,
-          life2,
-          attackingPlayer,
-          TurnPhase.DeclareBlockers,
-          battleground.declareAttackers(attackingPlayer, attackingCreatureUids.toSet))
-    }
+    if (attackingCreatureUids.isEmpty)
+      endCurrentTurn()
+    else
+      GameState(
+        life1,
+        life2,
+        attackingPlayer,
+        TurnPhase.DeclareBlockers,
+        battleground.declareAttackers(attackingPlayer, attackingCreatureUids))
   }
 
   def declareBlockers(blockingAssignment: Map[Int, Int]): GameState = {
