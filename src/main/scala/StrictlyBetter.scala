@@ -6,27 +6,27 @@ package main.scala
 object StrictlyBetter {
 
   /* Combines two Option[Int] representing tryCompareTo results into one. */
-  def combine(x: Option[Int], y: Option[Int]): Option[Int] = (x, y) match {
-    case (None, _) => None
-    case (_, None) => None
-
-    case (Some(xValue), Some(yValue)) => combine(xValue, yValue)
+  def combine(x: Option[Int], y: => Option[Int]): Option[Int] = x match {
+    case None => None
+    case Some(xValue) => y match {
+      case None => None
+      case Some(yValue) => combine(xValue, yValue)
+    }
   }
 
   /* Combines two integers representing compareTo results into one. */
-  def combine(x: Int, y: Int): Option[Int] = (x, y) match {
+  def combine(x: Int, y: Int): Option[Int] = {
     // x and y are not comparable
-    case (-1, 1) => None
-    case (1, -1) => None
-
-    // x == y
-    case (0, 0) => Some(0)
-
-    // x < y
-    case _ if (x < 0 || y < 0) => Some(-1)
-
-    // x > y
-    case _ => Some(+1)
+    if ((x < 0 && y > 0) ||
+        (x > 0 && y < 0)) None
+    else
+      // x == y
+      if (x == 0 && y == 0) Some(0)
+      else
+        // x < y
+        if (x < 0 || y < 0) Some(-1)
+        // x > y
+        else Some(+1)
   }
 
 }
