@@ -29,6 +29,10 @@ class GameStateSpec extends FlatSpec {
   }
 
   it should "serialize and deserialize objects" in {
+
+    def assertIsSerializable(gameState: GameState): Unit =
+      assert(gameState === GameState.fromString(gameState.toString))
+
     assertIsSerializable(gameState)
 
     assertIsSerializable(GameState())
@@ -174,7 +178,34 @@ class GameStateSpec extends FlatSpec {
       GameState.fromString("17/20 (1/DeclareAttackers): 4/4 vs 3/3 (T), 5/5"))
   }
 
-  def assertIsSerializable(gameState: GameState): Unit =
-    assert(gameState === GameState.fromString(gameState.toString))
+  it should "be partially ordered in regards to strictly better" in {
+    def assertTryCompareTo(
+        s1: String, s2: String, expected: Option[Int]): Unit = {
+      val gs1 = GameState.fromString(s1)
+      val gs2 = GameState.fromString(s2)
+      assert(gs1.tryCompareTo(gs2) === expected, s" for $gs1 and $gs2")
+    }
+
+    assertTryCompareTo(
+      "20/20 (2/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 1/1",
+      "20/20 (1/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 1/1",
+      None)
+    assertTryCompareTo(
+      "30/20 (2/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 1/1",
+      "20/10 (2/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 1/1",
+      None)
+    assertTryCompareTo(
+      "20/20 (2/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 1/1",
+      "20/10 (2/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 1/1",
+      Some(+1))
+    assertTryCompareTo(
+      "20/20 (2/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 1/1",
+      "20/20 (2/DeclareAttackers): 10/10 (T) vs 3/3, 1/1",
+      Some(+1))
+    assertTryCompareTo(
+      "20/20 (2/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 1/1",
+      "20/10 (2/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 3/3, 3/3, 1/1",
+      None)
+  }
 
 }

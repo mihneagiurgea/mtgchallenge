@@ -34,7 +34,8 @@ case class GameState(
     activePlayer: Int = 1,
     turnPhase: TurnPhase = TurnPhase.DeclareAttackers,
     battleground: Battleground = Battleground())
-  extends GameNode {
+  extends GameNode
+  with PartiallyOrdered[GameState] {
 
   require(activePlayer == 1 || activePlayer == 2)
 
@@ -78,6 +79,44 @@ case class GameState(
   def defendingingPlayerCreatures = battleground(defendingPlayer)
 
   override def toString = s"$life1/$life2 ($activePlayer/$turnPhase): $battleground"
+
+  /* Business logic */
+
+  def tryCompareTo[B >: GameState](that: B)
+      (implicit arg0: (B) ⇒ PartiallyOrdered[B]) =
+    tryCompareTo(that.asInstanceOf[GameState])
+
+  def tryCompareTo(that: GameState): Option[Int] = {
+    // In order for GameStates to be comparable, they must have the same
+    // TurnPhase and active player.
+    if (this.activePlayer != that.activePlayer ||
+      this.turnPhase != that.turnPhase) None
+    else
+      StrictlyBetter.combine(
+        tryCompareLives(that),
+        tryCompareBattlegrounds(that.battleground)
+      )
+  }
+
+  private def tryCompareLives(that: GameState): Option[Int] = {
+    val cmpLife1 = this.life1 - that.life1
+    val cmpLife2 = this.life2 - that.life2
+    if (nextToAct == 1) StrictlyBetter.combine(cmpLife1, -cmpLife2)
+    else StrictlyBetter.combine(-cmpLife1, cmpLife2)
+  }
+
+  private def tryCompareBattlegrounds(that: Battleground): Option[Int] = {
+    val cmpPlayer1 = battleground.player1.tryCompareTo(that.player1)
+    if (cmpPlayer1.isEmpty) None
+    else {
+      val cmpPlayer2 = battleground.player2.tryCompareTo(that.player2)
+      if (cmpPlayer2.isEmpty) None
+      if (nextToAct == 1)
+        StrictlyBetter.combine(cmpPlayer1.get, -cmpPlayer2.get)
+      else
+        StrictlyBetter.combine(-cmpPlayer1.get, cmpPlayer2.get)
+    }
+  }
 
   def isValidAttack(attackingCreatureUids: List[Int]): Boolean =
     attackingCreatureUids.forall(
