@@ -9,21 +9,22 @@ case class BruteForceStrategy() extends GameGraph[GameState] {
 
   def getNextStates(
       gameState: GameState): Set[GameState] = gameState.turnPhase match {
-    case TurnPhase.DeclareAttackers => getNextStatesWhenAttacking(gameState).toSet
-    case TurnPhase.DeclareBlockers => getNextStatesWhenBlocking(gameState).toSet
-    case TurnPhase.CombatStep => getNextStatesDuringCombatStep(gameState).toSet
+    case TurnPhase.DeclareAttackers => getNextStatesWhenAttacking(gameState)
+    case TurnPhase.DeclareBlockers => getNextStatesWhenBlocking(gameState)
+    case TurnPhase.CombatStep => getNextStatesDuringCombatStep(gameState)
   }
 
   private def getNextStatesWhenAttacking(
-      gameState: GameState): Iterator[GameState] = {
+      gameState: GameState): Set[GameState] = {
     val canAttackIndexes =
       gameState.filterAttackingPlayerCreatureIndexes(!_.isTapped).toSet
-    for (subset <- canAttackIndexes.subsets)
-      yield gameState.declareAttackers(subset)
+    // Build the powerset of canAttackIndexes (a set of all subsets).
+    val canAttackIndexesPowerset = canAttackIndexes.subsets.toSet
+    canAttackIndexesPowerset.map(subset => gameState.declareAttackers(subset))
   }
 
   private def getNextStatesWhenBlocking(
-      gameState: GameState): Iterator[GameState] = {
+      gameState: GameState): Set[GameState] = {
     val attackingIndexes =
       gameState.filterAttackingPlayerCreatureIndexes(_.isAttacking)
     val canDefendIndexes =
@@ -34,20 +35,18 @@ case class BruteForceStrategy() extends GameGraph[GameState] {
     val mappings = Combinatorics.getAllMappings(
       canDefendIndexes,
       NO_BLOCK_INDEX :: attackingIndexes)
-    for (mapping <- mappings.toIterator) yield {
-      // Remove NO_BLOCK_UID from mapping.
-      val fixedMapping = mapping.filterNot( { case (k, value) => value == -1 } )
-      gameState.declareBlockers(fixedMapping)
-    }
+    // Remove NO_BLOCK_UID from mapping.
+    val fixedMappings =
+      mappings.map(mapping => mapping.filterNot( { case (_, v) => v == -1 } ))
+    fixedMappings.map(mapping => gameState.declareBlockers(mapping)).toSet
   }
 
   private def getNextStatesDuringCombatStep(
-      gameState: GameState): Iterator[GameState] = {
+      gameState: GameState): Set[GameState] = {
     val unorderedCombatAssignment = gameState.combatAssignment
     val mappings =
       Combinatorics.getAllShuffledMappings(unorderedCombatAssignment)
-    for (mapping <- mappings.toIterator)
-      yield gameState.resolveCombat(mapping)
+    mappings.map(mapping => gameState.resolveCombat(mapping)).toSet
   }
 
 }
