@@ -17,3 +17,12 @@
 [info]   + graph size   26,472 nodes in 1,704 ms
 [info]   + solved 20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 3/3, 1/1
 [info]   + graph size   42,326 nodes in 1,611 ms
+
+    Small refactorings to use Set[GameState] instead of Iterator[GameState]
+
+[info]   + solved 20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3
+[info]   + graph size    2,640 nodes in   186 ms
+[info]   + solved 20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3, 1/1
+[info]   + graph size   26,472 nodes in 1,387 ms
+[info]   + solved 20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 3/3, 1/1
+[info]   + graph size   42,326 nodes in 1,204 ms

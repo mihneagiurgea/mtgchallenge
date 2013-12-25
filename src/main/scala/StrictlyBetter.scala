@@ -29,6 +29,23 @@ object StrictlyBetter {
         else Some(+1)
   }
 
+  /* Try to compare Sets of partially ordered elements.
+   *
+   * A Set s1 is less than another Set s2 iff all elements from s1 are less
+   * than all elements from s2.
+   */
+  def tryCompare[T <% PartiallyOrdered[T]](s1: Set[T], s2: Set[T]): Option[Int] = {
+    def isLessThan(s1: Set[T], s2: Set[T]): Boolean =
+      s1.forall(e => s2.forall(e <= _))
+
+    if (s1 == s2) Some(0)
+    else
+      if (isLessThan(s1, s2)) Some(-1)
+      else
+        if (isLessThan(s2, s1)) Some(+1)
+        else None
+  }
+
   /* Returns all maximal elements from a list of partially ordered elements. */
   def maximals[T <% PartiallyOrdered[T]](ls: List[T]): List[T] = {
     def addToMaximals(maximals: List[T], e: T): List[T] = {

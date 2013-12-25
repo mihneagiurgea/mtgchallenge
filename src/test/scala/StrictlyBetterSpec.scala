@@ -47,4 +47,26 @@ class StrictlyBetterSpec extends FlatSpec {
       List[Point]((1, 2), (2, 1)).toSet)
   }
 
+  it should "tryCompare Sets of PartiallyOrdered items" in {
+    val s1 = Set[Point]((1, 4), (3, 2))
+    val s2 = Set[Point]((0, 0), (1, 1))
+    val s3 = Set[Point]((4, 5))
+
+    assert(StrictlyBetter.tryCompare(s1, s2) === Some(+1))
+    assert(StrictlyBetter.tryCompare(s2, s1) === Some(-1))
+    assert(StrictlyBetter.tryCompare(s1, s3) === Some(-1))
+    assert(StrictlyBetter.tryCompare(s3, s1) === Some(+1))
+    assert(StrictlyBetter.tryCompare(s2, s3) === Some(-1))
+    assert(StrictlyBetter.tryCompare(s3, s2) === Some(+1))
+
+    val s4 = Set[Point]((2, 3))
+    assert(StrictlyBetter.tryCompare(s1, s4) === None)
+    assert(StrictlyBetter.tryCompare(s2, s4) === Some(-1))
+    assert(StrictlyBetter.tryCompare(s3, s4) === Some(+1))
+
+    val s5 = Set[Point]((3, 2), (1, 4))
+    println(s"s1: $s1 | s5: $s5")
+    assert(StrictlyBetter.tryCompare(s1, s5) === Some(0))
+  }
+
 }
