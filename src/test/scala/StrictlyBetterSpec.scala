@@ -3,6 +3,7 @@ package test.scala
 import org.scalatest.FlatSpec
 
 import main.scala.StrictlyBetter
+import main.scala.StrictlyBetter._
 
 class StrictlyBetterSpec extends FlatSpec {
 
@@ -47,11 +48,13 @@ class StrictlyBetterSpec extends FlatSpec {
       List[Point]((1, 2), (2, 1)).toSet)
   }
 
-  it should "tryCompare Sets of PartiallyOrdered items" in {
-    val s1 = Set[Point]((1, 4), (3, 2))
-    val s2 = Set[Point]((0, 0), (1, 1))
-    val s3 = Set[Point]((4, 5))
+  val s1 = Set[Point]((1, 4), (3, 2))
+  val s2 = Set[Point]((0, 0), (1, 1))
+  val s3 = Set[Point]((4, 5))
+  val s4 = Set[Point]((2, 3))
+  val s5 = Set[Point]((3, 2), (1, 4))
 
+  it should "tryCompare Sets of PartiallyOrdered items" in {
     assert(StrictlyBetter.tryCompare(s1, s2) === Some(+1))
     assert(StrictlyBetter.tryCompare(s2, s1) === Some(-1))
     assert(StrictlyBetter.tryCompare(s1, s3) === Some(-1))
@@ -59,14 +62,33 @@ class StrictlyBetterSpec extends FlatSpec {
     assert(StrictlyBetter.tryCompare(s2, s3) === Some(-1))
     assert(StrictlyBetter.tryCompare(s3, s2) === Some(+1))
 
-    val s4 = Set[Point]((2, 3))
     assert(StrictlyBetter.tryCompare(s1, s4) === None)
     assert(StrictlyBetter.tryCompare(s2, s4) === Some(-1))
     assert(StrictlyBetter.tryCompare(s3, s4) === Some(+1))
 
-    val s5 = Set[Point]((3, 2), (1, 4))
     println(s"s1: $s1 | s5: $s5")
     assert(StrictlyBetter.tryCompare(s1, s5) === Some(0))
+
+    val p1 = Point(1, 4)
+    val p2 = Point(3, 2)
+    val p3 = Point(2, 7)
+    assert(StrictlyBetter.tryCompare(Set(p1), Set(p2)) === None)
+    assert(StrictlyBetter.tryCompare(Set(p1), Set(p3)) === Some(-1))
+    assert(StrictlyBetter.tryCompare(Set(p3), Set(p1)) === Some(+1))
+  }
+
+  it should "view Sets of PartiallyOrdered as PartiallyOrdered" in {
+    assert(s1 > s2)
+  }
+
+  it should "compute maximals and minimals from a list of sets of " +
+      "partially ordered elements" in {
+    assert(
+      StrictlyBetter.maximals(List(s1, s2, s3, s4, s5)).toSet ===
+      List(s3).toSet)
+    assert(
+      StrictlyBetter.maximals(List(s1, s2, s4, s5)).toSet ===
+      List(s1, s4).toSet)
   }
 
 }
