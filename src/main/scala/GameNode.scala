@@ -14,6 +14,8 @@ trait GameNode {
 
 trait GameGraph[T <: GameNode] {
 
-  def getNextStates(gameNode: T): Iterator[T]
+  def successor(gameNode: T): Set[T] = getNextStates(gameNode)
+
+  def getNextStates(gameNode: T): Set[T]
 
 }

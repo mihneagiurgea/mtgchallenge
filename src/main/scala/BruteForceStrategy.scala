@@ -8,10 +8,10 @@ case class BruteForceStrategy() extends GameGraph[GameState] {
   private val NO_BLOCK_INDEX = -1
 
   def getNextStates(
-      gameState: GameState): Iterator[GameState] = gameState.turnPhase match {
-    case TurnPhase.DeclareAttackers => getNextStatesWhenAttacking(gameState)
-    case TurnPhase.DeclareBlockers => getNextStatesWhenBlocking(gameState)
-    case TurnPhase.CombatStep => getNextStatesDuringCombatStep(gameState)
+      gameState: GameState): Set[GameState] = gameState.turnPhase match {
+    case TurnPhase.DeclareAttackers => getNextStatesWhenAttacking(gameState).toSet
+    case TurnPhase.DeclareBlockers => getNextStatesWhenBlocking(gameState).toSet
+    case TurnPhase.CombatStep => getNextStatesDuringCombatStep(gameState).toSet
   }
 
   private def getNextStatesWhenAttacking(

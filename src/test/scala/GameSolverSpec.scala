@@ -32,9 +32,9 @@ class GameSolverSpec extends FlatSpec {
     val n4 = Node(3, 2, Outcome.Loss)
     val n3 = Node(4, 1, Outcome.Loss)
 
-    val edges = Map[Node, Iterator[Node]](
-      n1 -> Iterator(n2, n4),
-      n2 -> Iterator(n3)
+    val edges = Map[Node, Set[Node]](
+      n1 -> Set(n2, n4),
+      n2 -> Set(n3)
     )
 
     val expectedOutcomes = Map(
@@ -52,9 +52,9 @@ class GameSolverSpec extends FlatSpec {
     val n2 = Node(2, 2)
     val n3 = Node(3, 2, Outcome.Loss)
 
-    val edges = Map[Node, Iterator[Node]](
-      n1 -> Iterator(n2, n3),
-      n2 -> Iterator(n1)
+    val edges = Map[Node, Set[Node]](
+      n1 -> Set(n2, n3),
+      n2 -> Set(n1)
     )
 
     val expectedOutcomes = Map(
@@ -72,10 +72,10 @@ class GameSolverSpec extends FlatSpec {
     val n2 = Node(2, 2)
     val n3 = Node(3, 2)
 
-    val edges = Map[Node, Iterator[Node]](
-      n1 -> Iterator(n2, n3),
-      n2 -> Iterator(n1),
-      n3 -> Iterator(n1)
+    val edges = Map[Node, Set[Node]](
+      n1 -> Set(n2, n3),
+      n2 -> Set(n1),
+      n3 -> Set(n1)
     )
 
     val expectedOutcomes = Map(
@@ -95,11 +95,11 @@ class GameSolverSpec extends FlatSpec {
     val n4 = Node(4, 2)
     val n5 = Node(5, 2, Outcome.Win)
 
-    val edges = Map[Node, Iterator[Node]](
-      n1 -> Iterator(n2, n5),
-      n2 -> Iterator(n3),
-      n3 -> Iterator(n4),
-      n4 -> Iterator(n1)
+    val edges = Map[Node, Set[Node]](
+      n1 -> Set(n2, n5),
+      n2 -> Set(n3),
+      n3 -> Set(n4),
+      n4 -> Set(n1)
     )
 
     val expectedOutcomes = Map(

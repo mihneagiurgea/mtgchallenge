@@ -11,7 +11,7 @@ object GameSolver {
 }
 
 case class GameSolver[T <: GameNode](
-    outgoingEdges: (T) => Iterator[T],
+    outgoingEdges: (T) => Set[T],
     predictOutcome: (T) => Outcome = GameSolver.defaultPredictOutcome[T] _) {
 
   val queue = mutable.Queue[T]()
