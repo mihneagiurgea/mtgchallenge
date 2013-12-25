@@ -29,4 +29,24 @@ object StrictlyBetter {
         else Some(+1)
   }
 
+  /* Returns all maximal elements from a list of partially ordered elements. */
+  def maximals[T <% PartiallyOrdered[T]](ls: List[T]): List[T] = {
+    def addToMaximals(maximals: List[T], e: T): List[T] = {
+      val newMaximals = maximals.filterNot(_ < e)
+      if (newMaximals.exists(e < _)) newMaximals
+      else e :: newMaximals
+    }
+    ls.foldLeft(List[T]())(addToMaximals)
+  }
+
+  /* Returns all minimal elements from a list of partially ordered elements. */
+  def minimals[T <% PartiallyOrdered[T]](ls: List[T]): List[T] = {
+    def addToMinimals(minimals: List[T], e: T): List[T] = {
+      val newMinimals = minimals.filterNot(_ > e)
+      if (newMinimals.exists(e > _)) newMinimals
+      else e :: newMinimals
+    }
+    ls.foldLeft(List[T]())(addToMinimals)
+  }
+
 }
