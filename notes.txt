@@ -26,3 +26,13 @@
 [info]   + graph size   26,472 nodes in 1,387 ms
 [info]   + solved 20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 3/3, 1/1
 [info]   + graph size   42,326 nodes in 1,204 ms
+
+    Switched from BruteForceStrategy to MinimaxStrategy (improved only by
+    getNextStatesWhenBlocking and getNextStatesDuringCombatStep).
+
+[info]   + solved 20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3
+[info]   + graph size    2,049 nodes in   264 ms
+[info]   + solved 20/20 (1/DeclareAttackers): 7/7 vs 3/3, 3/3, 3/3, 1/1
+[info]   + graph size   14,664 nodes in 1,464 ms
+[info]   + solved 20/20 (1/DeclareAttackers): 10/10 vs 3/3, 3/3, 3/3, 3/3, 1/1
+[info]   + graph size   17,742 nodes in   910 ms

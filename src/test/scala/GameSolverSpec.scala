@@ -121,7 +121,7 @@ class GameSolverSpec extends FlatSpec {
       { case (gameState, outcome) => {
           val startTime = System.currentTimeMillis()
 
-          val strategy = BruteForceStrategy()
+          val strategy = MinimaxStrategy()
           val solver = GameSolver(
             strategy.getNextStates, PredictingHeuristic.predictOutcome)
           val nodeToOutcome = solver.solveGraph(gameState)
