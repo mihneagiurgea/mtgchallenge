@@ -3,14 +3,22 @@ package main.scala
 /** Factory for PlayerBattleground instances. */
 object PlayerBattleground {
 
-  def apply(creatures: Creature*): PlayerBattleground = {
-    val z = new PlayerBattleground()
-    creatures.foldLeft(z)(_ + _)
-  }
+  def apply(creatures: Creature*): PlayerBattleground =
+    fromUnsortedCreatures(creatures.toList)
 
   def fromString(s: String): PlayerBattleground = {
     val split = s.trim.split(", ").toList.map(_.trim).filter(_.length > 0)
-    PlayerBattleground(split.map(Creature.fromString(_)))
+    val creatures = split.map(Creature.fromString(_))
+    // We cannot use PlayerBattleground(creatures) because that will
+    // use the private apply() corresponding to the case class' default
+    // constructor.
+    fromUnsortedCreatures(creatures)
+  }
+
+  protected def fromUnsortedCreatures(
+      creatures: List[Creature]): PlayerBattleground = {
+    val z = new PlayerBattleground()
+    creatures.foldLeft(z)(_ + _)
   }
 
 }

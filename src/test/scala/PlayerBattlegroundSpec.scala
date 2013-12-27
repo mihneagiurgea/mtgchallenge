@@ -19,6 +19,9 @@ class PlayerBattlegroundSpec extends FlatSpec {
     assert(PlayerBattleground(c1, c2, c3) === PlayerBattleground(c1) + c2 + c3)
 
     assert(PlayerBattleground(c1, c2, c3) !== PlayerBattleground(c1, c2))
+
+    assert(PlayerBattleground.fromString("3/3 (T), 2/2, 1/1") ===
+      PlayerBattleground(c1, c2, c3))
   }
 
   it should "remove multiple creatures at a time" in {
@@ -60,6 +63,9 @@ class PlayerBattlegroundSpec extends FlatSpec {
 
     assert(PlayerBattleground(c1, c1, c2).
       tryCompareTo(PlayerBattleground(c1, c1, c3)) === None)
+
+    assert(PlayerBattleground(c3, c2, c1).
+      tryCompareTo(PlayerBattleground(c2, c1)) === Some(+1))
   }
 
 }
