@@ -213,8 +213,8 @@ class GameStateSpec extends FlatSpec {
       None)
 
     assertTryCompareTo(
-      "20/17 (2/DeclareAttackers): 3/3 (T), 2/2, 1/1 vs 7/7",
-      "20/20 (2/DeclareAttackers): 2/2, 1/1 vs 7/7",
+      "20/17 (2/DeclareAttackers): 1/1 (T), 2/2 vs 7/7",
+      "20/20 (2/DeclareAttackers): 2/2 vs 7/7",
       Some(-1)
     )
   }
