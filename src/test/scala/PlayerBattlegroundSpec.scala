@@ -68,20 +68,40 @@ class PlayerBattlegroundSpec extends FlatSpec {
 
   it should "be partially ordered in regards to strictly better" in {
     // c1 < c2, but c1 and c2 are not comparable with c3
-    assert(PlayerBattleground(c1).
-      tryCompareTo(PlayerBattleground(c2)) === Some(-1))
-    assert(PlayerBattleground(c1).
-      tryCompareTo(PlayerBattleground(c1, c1)) === Some(-1))
-    assert(PlayerBattleground(c2, c1, c2, c1, c2).
-      tryCompareTo(PlayerBattleground(c2, c1, c2, c1, c2)) === Some(0))
-    assert(PlayerBattleground(c2, c1, c2, c1, c2).
-      tryCompareTo(PlayerBattleground(c1, c2, c1, c2)) === Some(+1))
+    assertTryCompareTo(
+      PlayerBattleground(c1), PlayerBattleground(c2), Some(-1))
+    assertTryCompareTo(
+      PlayerBattleground(c1), PlayerBattleground(c1, c1), Some(-1))
+    assertTryCompareTo(
+      PlayerBattleground(c2, c1, c2, c1, c2),
+      PlayerBattleground(c2, c1, c2, c1, c2),
+      Some(0))
+    assertTryCompareTo(
+      PlayerBattleground(c2, c1, c2, c1, c2),
+      PlayerBattleground(c1, c2, c1, c2),
+      Some(+1))
+    assertTryCompareTo(
+      PlayerBattleground(c1, c1, c2),
+      PlayerBattleground(c1, c1, c3),
+      None)
+    assertTryCompareTo(
+      PlayerBattleground(c1, c2, c3),
+      PlayerBattleground(c1, c2),
+      Some(+1))
 
-    assert(PlayerBattleground(c1, c1, c2).
-      tryCompareTo(PlayerBattleground(c1, c1, c3)) === None)
+    assertTryCompareTo("1/1 (T), 2/2", "2/2", Some(-1))
+  }
 
-    assert(PlayerBattleground(c3, c2, c1).
-      tryCompareTo(PlayerBattleground(c2, c1)) === Some(+1))
+  def assertTryCompareTo(
+      s1: String, s2: String, expected: Option[Int]): Unit = {
+    val x = PlayerBattleground.fromString(s1)
+    val y = PlayerBattleground.fromString(s2)
+    assertTryCompareTo(x, y, expected)
+  }
+
+  def assertTryCompareTo(
+      x: PlayerBattleground, y: PlayerBattleground, expected: Option[Int]): Unit = {
+    assert(x.tryCompareTo(y) === expected, s" for $x and $y")
   }
 
 }
