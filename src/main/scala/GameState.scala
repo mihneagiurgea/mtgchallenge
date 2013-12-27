@@ -111,10 +111,11 @@ case class GameState(
     else {
       val cmpPlayer2 = battleground.player2.tryCompareTo(that.player2)
       if (cmpPlayer2.isEmpty) None
-      if (nextToAct == 1)
-        StrictlyBetter.combine(cmpPlayer1.get, -cmpPlayer2.get)
       else
-        StrictlyBetter.combine(-cmpPlayer1.get, cmpPlayer2.get)
+        if (nextToAct == 1)
+          StrictlyBetter.combine(cmpPlayer1.get, -cmpPlayer2.get)
+        else
+          StrictlyBetter.combine(-cmpPlayer1.get, cmpPlayer2.get)
     }
   }
 
