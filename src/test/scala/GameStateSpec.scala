@@ -10,6 +10,11 @@ import main.scala.TurnPhase
 
 class GameStateSpec extends FlatSpec {
 
+  // TODO - the current usage of Battleground.fromString is a crude hack!
+  // E.g.: Battleground.fromString("1/1 (TA), 2/2 (TA) vs 3/3 (B#0), 4/4 (B#0)")
+  // the order of the creatures is hardcoded in the string & in the blocking
+  // assignments.
+
   val c1 = Creature(CreatureCard(1, 1))
   val c2 = Creature(CreatureCard(2, 2))
   val c3 = Creature(CreatureCard(3, 3), tapped=true)
@@ -132,17 +137,17 @@ class GameStateSpec extends FlatSpec {
 
   it should "resolve combat damage when player2 is attacked" in {
     val gameState = GameState.fromString(
-      "20/20 (1/CombatStep): 4/4 (TA), 2/3 (TA) vs 2/2 (B#0), 3/3 (B#0)")
+      "20/20 (1/CombatStep): 2/3 (TA), 4/4 (TA) vs 2/2 (B#1), 3/3 (B#1)")
 
     val combatAssignment1 = Map(
-      0 -> List(0, 1),
-      1 -> List())
+      0 -> List(),
+      1 -> List(0, 1))
     assert(gameState.resolveCombat(combatAssignment1) ===
       GameState.fromString("20/18 (2/DeclareAttackers): 2/3 (T) vs 3/3"))
 
     val combatAssignment2 = Map(
-      0 -> List(1, 0),
-      1 -> List())
+      0 -> List(),
+      1 -> List(1, 0))
     assert(gameState.resolveCombat(combatAssignment2) ===
       GameState.fromString("20/18 (2/DeclareAttackers): 2/3 (T) vs 2/2"))
   }
@@ -164,11 +169,11 @@ class GameStateSpec extends FlatSpec {
 
   it should "resolve combat damage - complex scenario #2" in {
     val gameState = GameState.fromString(
-      "20/20 (2/CombatStep): 0/7 (B#0), 4/4 (B#0), 3/3 (B#0) vs 10/10 (TA)")
+      "20/20 (2/CombatStep): 3/3 (B#0), 0/7 (B#0), 4/4 (B#0) vs 10/10 (TA)")
     val combatAssignment = Map(
-      0 -> List(0, 1, 2))
+      0 -> List(1, 2, 0))
     assert(gameState.resolveCombat(combatAssignment) ===
-      GameState.fromString("20/20 (1/DeclareAttackers): 4/4, 3/3 vs 10/10 (T)"))
+      GameState.fromString("20/20 (1/DeclareAttackers): 3/3, 4/4 vs 10/10 (T)"))
   }
 
   it should "untap creatures after resolving combat damage" in {
@@ -206,6 +211,12 @@ class GameStateSpec extends FlatSpec {
       "20/20 (2/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 1/1",
       "20/10 (2/DeclareAttackers): 10/10 (T) vs 3/3, 3/3, 3/3, 3/3, 1/1",
       None)
+
+    assertTryCompareTo(
+      "20/17 (2/DeclareAttackers): 3/3 (T), 2/2, 1/1 vs 7/7",
+      "20/20 (2/DeclareAttackers): 2/2, 1/1 vs 7/7",
+      Some(-1)
+    )
   }
 
 }
