@@ -66,23 +66,23 @@ object StrictlyBetter {
   }
 
   /* Returns all maximal elements from a list of partially ordered elements. */
-  def maximals[T <% PartiallyOrdered[T]](ls: List[T]): List[T] = {
-    def addToMaximals(maximals: List[T], e: T): List[T] = {
+  def maximals[T <% PartiallyOrdered[T]](ls: Set[T]): Set[T] = {
+    def addToMaximals(maximals: Set[T], e: T): Set[T] = {
       val newMaximals = maximals.filterNot(_ < e)
       if (newMaximals.exists(e < _)) newMaximals
-      else e :: newMaximals
+      else newMaximals + e
     }
-    ls.foldLeft(List[T]())(addToMaximals)
+    ls.foldLeft(Set[T]())(addToMaximals)
   }
 
   /* Returns all minimal elements from a list of partially ordered elements. */
-  def minimals[T <% PartiallyOrdered[T]](ls: List[T]): List[T] = {
-    def addToMinimals(minimals: List[T], e: T): List[T] = {
+  def minimals[T <% PartiallyOrdered[T]](ls: Set[T]): Set[T] = {
+    def addToMinimals(minimals: Set[T], e: T): Set[T] = {
       val newMinimals = minimals.filterNot(_ > e)
       if (newMinimals.exists(e > _)) newMinimals
-      else e :: newMinimals
+      else newMinimals + e
     }
-    ls.foldLeft(List[T]())(addToMinimals)
+    ls.foldLeft(Set[T]())(addToMinimals)
   }
 
 }

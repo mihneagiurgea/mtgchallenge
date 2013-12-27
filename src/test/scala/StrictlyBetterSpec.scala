@@ -1,5 +1,8 @@
 package test.scala
 
+// This import was added because compiler warning said so :)
+import scala.language.implicitConversions
+
 import org.scalatest.FlatSpec
 
 import main.scala.StrictlyBetter
@@ -37,15 +40,15 @@ class StrictlyBetterSpec extends FlatSpec {
 
   implicit def tupleToPoint(t: (Int, Int)) = Point(t._1, t._2)
 
-  val points = List[Point](
+  val points = Set[Point](
     (1, 2), (2, 1), (2, 4), (3, 3), (4, 3), (5, 3), (6, 1))
 
-  it should "compute maximals and minimals from a list of partially ordered items" in {
-    assert(StrictlyBetter.maximals(points).toSet ===
-      List[Point]((2, 4), (5, 3), (6, 1)).toSet)
+  it should "compute maximals and minimals from a set of partially ordered items" in {
+    assert(StrictlyBetter.maximals(points) ===
+      Set[Point]((2, 4), (5, 3), (6, 1)))
 
-    assert(StrictlyBetter.minimals(points).toSet ===
-      List[Point]((1, 2), (2, 1)).toSet)
+    assert(StrictlyBetter.minimals(points) ===
+      Set[Point]((1, 2), (2, 1)))
   }
 
   val s1 = Set[Point]((1, 4), (3, 2))
@@ -66,7 +69,6 @@ class StrictlyBetterSpec extends FlatSpec {
     assert(StrictlyBetter.tryCompare(s2, s4) === Some(-1))
     assert(StrictlyBetter.tryCompare(s3, s4) === Some(+1))
 
-    println(s"s1: $s1 | s5: $s5")
     assert(StrictlyBetter.tryCompare(s1, s5) === Some(0))
 
     val p1 = Point(1, 4)
@@ -81,14 +83,12 @@ class StrictlyBetterSpec extends FlatSpec {
     assert(s1 > s2)
   }
 
-  it should "compute maximals and minimals from a list of sets of " +
+  it should "compute maximals and minimals from a set of sets of " +
       "partially ordered elements" in {
     assert(
-      StrictlyBetter.maximals(List(s1, s2, s3, s4, s5)).toSet ===
-      List(s3).toSet)
+      StrictlyBetter.maximals(Set(s1, s2, s3, s4, s5)) === Set(s3))
     assert(
-      StrictlyBetter.maximals(List(s1, s2, s4, s5)).toSet ===
-      List(s1, s4).toSet)
+      StrictlyBetter.maximals(Set(s1, s2, s4, s5)) === Set(s1, s4))
   }
 
 }
