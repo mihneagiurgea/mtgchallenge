@@ -62,20 +62,23 @@ case class PlayerBattleground private(creatures: List[Creature])
     tryCompareTo(that.asInstanceOf[PlayerBattleground])
 
   def tryCompareTo(that: PlayerBattleground): Option[Int] = {
+    // TODO - improve this implementation to pass all tests (see specs).
 
-    def f(x: List[Creature], y: List[Creature], res: Option[Int]): Option[Int] = (x, y) match {
-      case (Nil, Nil) => res
-      case (Nil, _) => StrictlyBetter.combine(res, Some(-1))
-      case (_, Nil) => StrictlyBetter.combine(res, Some(+1))
+    def isLessThan(x: List[Creature], y: List[Creature]): Boolean = (x, y) match {
+      case (Nil, _) => true
+      case (_, Nil) => false
       case (h1 :: t1, h2 :: t2) => {
-        val newRes = StrictlyBetter.combine(res, h1.tryCompareTo(h2))
-        newRes match {
-          case None => None
-          case _ => f(t1, t2, newRes)
-        }
+        if (h1 <= h2) isLessThan(t1, t2)
+        else isLessThan(x, t2)
       }
     }
-    f(this.creatures, that.creatures, Some(0))
+
+    if (this.creatures == that.creatures) Some(0)
+    else
+      if (isLessThan(this.creatures, that.creatures)) Some(-1)
+      else
+        if (isLessThan(that.creatures, this.creatures)) Some(+1)
+        else None
   }
 
   def + (creature: Creature): PlayerBattleground = {
