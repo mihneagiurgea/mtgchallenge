@@ -3,9 +3,15 @@ package main.scala
 import Combinatorics._
 import TurnPhase._
 
-case class BruteForceStrategy() extends GameGraph[GameState] {
+object BruteForceStrategy {
 
-  private val NO_BLOCK_INDEX = -1
+  def apply(): BruteForceStrategy = new BruteForceStrategy()
+
+}
+
+class BruteForceStrategy() extends GameGraph[GameState] {
+
+  protected val NO_BLOCK_INDEX = -1
 
   def getNextStates(
       gameState: GameState): Set[GameState] = gameState.turnPhase match {
@@ -14,7 +20,7 @@ case class BruteForceStrategy() extends GameGraph[GameState] {
     case TurnPhase.CombatStep => getNextStatesDuringCombatStep(gameState)
   }
 
-  private def getNextStatesWhenAttacking(
+  protected def getNextStatesWhenAttacking(
       gameState: GameState): Set[GameState] = {
     val canAttackIndexes =
       gameState.filterAttackingPlayerCreatureIndexes(!_.isTapped).toSet
@@ -23,7 +29,7 @@ case class BruteForceStrategy() extends GameGraph[GameState] {
     canAttackIndexesPowerset.map(subset => gameState.declareAttackers(subset))
   }
 
-  private def getNextStatesWhenBlocking(
+  protected def getNextStatesWhenBlocking(
       gameState: GameState): Set[GameState] = {
     val attackingIndexes =
       gameState.filterAttackingPlayerCreatureIndexes(_.isAttacking)
@@ -41,7 +47,7 @@ case class BruteForceStrategy() extends GameGraph[GameState] {
     fixedMappings.map(mapping => gameState.declareBlockers(mapping)).toSet
   }
 
-  private def getNextStatesDuringCombatStep(
+  protected def getNextStatesDuringCombatStep(
       gameState: GameState): Set[GameState] = {
     val unorderedCombatAssignment = gameState.combatAssignment
     val mappings =
