@@ -24,6 +24,18 @@ class BattlegroundSpec extends FlatSpec {
       Battleground().addCreature(c1, 1).addCreature(c3, 2).addCreature(c2, 1))
   }
 
+  ignore should "reorder blocker uids in fromString" in {
+    val battleground1 =
+      Battleground.fromString("1/1 (TA), 2/2 (TA) vs 3/3 (B#0)")
+    assert(battleground1(1)(battleground1(2)(0).blockedId).creatureCard ===
+      c1.creatureCard)
+
+    val battleground2 =
+      Battleground.fromString("2/2 (TA), 1/1 (TA) vs 3/3 (B#1)")
+    assert(battleground2(1)(battleground2(2)(0).blockedId).creatureCard ===
+      c1.creatureCard)
+  }
+
   it should "serialize and deserialize objects" in {
     assert(battleground === Battleground.fromString(battleground.toString))
 
