@@ -34,6 +34,7 @@ class CreatureCard private(val power: Int, val toughness: Int)
   require(toughness >= 0)
 
   def compare(that: CreatureCard) = {
+    // Ordered by power + toughness, then power. E.g.: 3/3 < 4/4, 1/5 < 3/3
     val this_size = power + toughness
     val that_size = that.power + that.toughness
 
