@@ -4,6 +4,7 @@ import org.scalatest._
 import main.scala.Creature
 import main.scala.CreatureCard
 import main.scala.PlayerBattleground
+import main.scala.PlayerBattleground._
 
 class PlayerBattlegroundSpec extends FlatSpec {
 
@@ -22,6 +23,21 @@ class PlayerBattlegroundSpec extends FlatSpec {
 
     assert(PlayerBattleground.fromString("3/3 (T), 2/2, 1/1") ===
       PlayerBattleground(c1, c2, c3))
+  }
+
+  it should "define a total ordering of creatures" in {
+    val c1 = Creature(CreatureCard(1, 1))
+    val c2 = Creature(CreatureCard(1, 1), tapped=true)
+    val c3 = Creature(CreatureCard(1, 2))
+
+    assert(List(c1, c2, c3).sortWith(SizeOrdering.lt) ==
+      List(c3, c2, c1).sortWith(SizeOrdering.lt))
+
+    val a = Creature(CreatureCard(4, 3))
+    val b = Creature(CreatureCard(1, 5))
+    val c = Creature(CreatureCard(0, 6))
+
+    assert(List(a, b, c).sortWith(SizeOrdering.lt) === List(c, b, a))
   }
 
   it should "remove multiple creatures at a time" in {

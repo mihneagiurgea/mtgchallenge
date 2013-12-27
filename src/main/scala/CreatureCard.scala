@@ -27,20 +27,10 @@ object CreatureCard {
   * ordering.
   */
 class CreatureCard private(val power: Int, val toughness: Int)
-  extends Ordered[CreatureCard]
-  with PartiallyOrdered[CreatureCard] {
+  extends PartiallyOrdered[CreatureCard] {
 
   require(power >= 0)
   require(toughness >= 0)
-
-  def compare(that: CreatureCard) = {
-    // Ordered by power + toughness, then power. E.g.: 3/3 < 4/4, 1/5 < 3/3
-    val this_size = power + toughness
-    val that_size = that.power + that.toughness
-
-    if (this_size == that_size) this.power - that.power
-    else this_size - that_size
-  }
 
   def tryCompareTo[B >: CreatureCard](that: B)
       (implicit arg0: (B) ⇒ PartiallyOrdered[B]) =

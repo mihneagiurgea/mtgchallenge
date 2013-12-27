@@ -3,6 +3,28 @@ package main.scala
 /** Factory for PlayerBattleground instances. */
 object PlayerBattleground {
 
+  // The current implementation of PlayerBattleground needs some Ordering
+  // of creatures. We'll define it here because other clients should NOT
+  // use it.
+  object SizeOrdering extends Ordering[Creature] {
+
+    def compare(a: Creature, b: Creature) = {
+      val cmpCreatureCard = compare(a.creatureCard, b.creatureCard)
+      if (cmpCreatureCard == 0) a.state compare b.state
+      else cmpCreatureCard
+    }
+
+    def compare(a: CreatureCard, b: CreatureCard) = {
+      // Ordered by power + toughness, then power. E.g.: 3/3 < 4/4, 1/5 < 3/3
+      val sizeA = a.power + a.toughness
+      val sizeB = b.power + b.toughness
+
+      if (sizeA == sizeB) a.power compare b.power
+      else sizeA compare sizeB
+    }
+
+  }
+
   def apply(creatures: Creature*): PlayerBattleground =
     fromUnsortedCreatures(creatures.toList)
 
@@ -31,6 +53,8 @@ object PlayerBattleground {
 case class PlayerBattleground private(creatures: List[Creature])
   extends PartiallyOrdered[PlayerBattleground]{
 
+  import PlayerBattleground.SizeOrdering
+
   private def this() = this(Nil)
 
   def tryCompareTo[B >: PlayerBattleground](that: B)
@@ -55,7 +79,7 @@ case class PlayerBattleground private(creatures: List[Creature])
   }
 
   def + (creature: Creature): PlayerBattleground = {
-    val (prefix, suffix) = creatures.span(_ < creature)
+    val (prefix, suffix) = creatures.span(SizeOrdering.lt(_, creature))
     PlayerBattleground(prefix ::: creature :: suffix)
   }
 

@@ -47,17 +47,12 @@ object Creature {
   * ordering.
   */
 case class Creature private(creatureCard: CreatureCard, state: Int)
-  extends Ordered[Creature]
-  with PartiallyOrdered[Creature] {
+  extends PartiallyOrdered[Creature] {
 
   import Creature._
 
   require(creatureCard != null)
   require(state >= 0)
-
-  def compare(that: Creature) =
-    if (this.creatureCard == that.creatureCard) this.state - that.state
-    else this.creatureCard compare that.creatureCard
 
   def tryCompareTo[B >: Creature](that: B)
       (implicit arg0: (B) ⇒ PartiallyOrdered[B]) =
