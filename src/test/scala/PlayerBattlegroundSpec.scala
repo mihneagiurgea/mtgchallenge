@@ -99,6 +99,8 @@ class PlayerBattlegroundSpec extends FlatSpec {
     assertTryCompareTo("2/2", "1/1 (T), 2/2", Some(-1))
     assertTryCompareTo("2/4, 5/5 (T), 5/5", "2/3, 4/5 (T), 5/5 (T)", Some(+1))
 
+    assertTryCompareTo("3/3, 3/3, 3/3 (T)", "1/1 (T), 3/3, 3/3", Some(+1))
+
     // This test fails because the current implementation is not 100% correct.
     // assertTryCompareTo("2/9, 5/5 (T), 5/5", "2/3, 4/5 (T), 5/5 (T)", Some(+1))
   }

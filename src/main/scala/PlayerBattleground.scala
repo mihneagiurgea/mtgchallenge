@@ -9,8 +9,10 @@ object PlayerBattleground {
   object SizeOrdering extends Ordering[Creature] {
 
     def compare(a: Creature, b: Creature) = {
+      // Order by CreatureCard comparator, then by state in decreasing order
+      // (such that tapped < not-tapped).
       val cmpCreatureCard = compare(a.creatureCard, b.creatureCard)
-      if (cmpCreatureCard == 0) a.state compare b.state
+      if (cmpCreatureCard == 0) -(a.state compare b.state)
       else cmpCreatureCard
     }
 
