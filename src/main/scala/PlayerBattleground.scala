@@ -37,11 +37,15 @@ object PlayerBattleground {
     fromUnsortedCreatures(creatures)
   }
 
-  protected def fromUnsortedCreatures(
-      creatures: List[Creature]): PlayerBattleground = {
-    val z = new PlayerBattleground()
-    creatures.foldLeft(z)(_ + _)
+  protected def isSorted(creatures: List[Creature]): Boolean = creatures match {
+    case Nil => true
+    case head :: Nil => true
+    case head :: tail => SizeOrdering.lteq(head, tail.head) && isSorted(tail)
   }
+
+  protected def fromUnsortedCreatures(
+      creatures: List[Creature]): PlayerBattleground =
+    PlayerBattleground(creatures.sortWith(SizeOrdering.lt))
 
 }
 
@@ -53,7 +57,7 @@ object PlayerBattleground {
 case class PlayerBattleground private(creatures: List[Creature])
   extends PartiallyOrdered[PlayerBattleground]{
 
-  import PlayerBattleground.SizeOrdering
+  require(PlayerBattleground.isSorted(creatures))
 
   private def this() = this(Nil)
 
@@ -81,20 +85,18 @@ case class PlayerBattleground private(creatures: List[Creature])
         else None
   }
 
-  def + (creature: Creature): PlayerBattleground = {
-    val (prefix, suffix) = creatures.span(SizeOrdering.lt(_, creature))
-    PlayerBattleground(prefix ::: creature :: suffix)
-  }
+  def + (creature: Creature): PlayerBattleground =
+    PlayerBattleground.fromUnsortedCreatures(creature :: creatures)
 
   def declareAttackers(indexes: Set[Int]): PlayerBattleground =
-    PlayerBattleground(
+    PlayerBattleground.fromUnsortedCreatures(
       creatures.zipWithIndex.map(
         { case (creature, idx) =>
             if (indexes(idx)) creature.attack() else creature })
     )
 
   def declareBlockers(blockingAssignment: Map[Int, Int]): PlayerBattleground =
-    PlayerBattleground(
+    PlayerBattleground.fromUnsortedCreatures(
       creatures.zipWithIndex.map(
         { case (creature, idx) =>
             if (blockingAssignment.contains(idx)) creature.block(blockingAssignment(idx))
@@ -102,12 +104,12 @@ case class PlayerBattleground private(creatures: List[Creature])
     )
 
   def removeMany(indexes: Set[Int]): PlayerBattleground =
-    PlayerBattleground(
+    PlayerBattleground.fromUnsortedCreatures(
       creatures.zipWithIndex.withFilter(x => !indexes(x._2)).map(_._1))
 
   /* The following methods mimic a List-like behaviour. */
   def map(f: Creature => Creature): PlayerBattleground =
-    PlayerBattleground(creatures.map(f))
+    PlayerBattleground.fromUnsortedCreatures(creatures.map(f))
 
   override def toString = creatures.mkString(", ")
 

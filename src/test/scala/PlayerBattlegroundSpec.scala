@@ -66,6 +66,12 @@ class PlayerBattlegroundSpec extends FlatSpec {
       PlayerBattleground(c1.block(1), c2.block(0), c3))
   }
 
+  it should "keep creatures sorted even after declaring attackers" in {
+    val pb1 = PlayerBattleground.fromString("1/1, 1/1, 1/1")
+    assert(pb1.declareAttackers(Set(0)) === pb1.declareAttackers(Set(1)))
+    assert(pb1.declareAttackers(Set(0)) === pb1.declareAttackers(Set(2)))
+  }
+
   it should "be partially ordered in regards to strictly better" in {
     // c1 < c2, but c1 and c2 are not comparable with c3
     assertTryCompareTo(
