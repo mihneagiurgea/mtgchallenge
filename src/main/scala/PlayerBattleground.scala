@@ -68,22 +68,31 @@ case class PlayerBattleground private(creatures: List[Creature])
     tryCompareTo(that.asInstanceOf[PlayerBattleground])
 
   def tryCompareTo(that: PlayerBattleground): Option[Int] = {
-    // TODO - improve this implementation to pass all tests (see specs).
 
-    def isLessThan(x: List[Creature], y: List[Creature]): Boolean = (x, y) match {
-      case (Nil, _) => true
-      case (_, Nil) => false
-      case (h1 :: t1, h2 :: t2) => {
-        if (h1 <= h2) isLessThan(t1, t2)
-        else isLessThan(x, t2)
-      }
+    def getAdjacentEdges(x: Creature, ls: List[Creature]): List[Int] =
+      ls.zipWithIndex.
+        filter({ case (creature, _) => x <= creature }).
+        map({ case (_, idx) => idx + 1 })
+
+    def toEdges(x: List[Creature], y: List[Creature]): Map[Int, List[Int]] = {
+      val N = x.length
+      val listOfEdges = x.map(creature => getAdjacentEdges(creature, y))
+      ((1 to N) zip listOfEdges).toMap
+    }
+
+    def isLessThanOrEqual(x: List[Creature], y: List[Creature]): Boolean = {
+      if (x.length == 0) true
+      else
+        if (x.length > y.length) false
+        else
+          MaximumMatching.hasPerfectMatching(toEdges(x, y))
     }
 
     if (this.creatures == that.creatures) Some(0)
     else
-      if (isLessThan(this.creatures, that.creatures)) Some(-1)
+      if (isLessThanOrEqual(this.creatures, that.creatures)) Some(-1)
       else
-        if (isLessThan(that.creatures, this.creatures)) Some(+1)
+        if (isLessThanOrEqual(that.creatures, this.creatures)) Some(+1)
         else None
   }
 
