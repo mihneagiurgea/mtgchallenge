@@ -19,6 +19,7 @@ object MaximumMatching {
 
     val L = mutable.IndexedSeq.fill(N + 1)(0)
     val R = mutable.IndexedSeq.fill(M + 1)(0)
+    // TODO - replace with BitSet
     val U = mutable.IndexedSeq.fill(N + 1)(false)
 
     def pairup(node: Int): Boolean = {
