@@ -50,7 +50,7 @@ case class GameSolver[T <: GameNode](
     // Reset visited to use as an indicator of which elements have been
     // added to queue.
     visited.clear()
-    queue.map(visited.add(_))
+    queue.foreach(visited.add(_))
 
     while (queue.length > 0) {
       val node = queue.dequeue()
@@ -80,7 +80,7 @@ case class GameSolver[T <: GameNode](
     }
 
     // All other nodes whose outcome has not been decided are a Draw.
-    outgoingDegree.keys.filterNot(nodeToOutcome.contains(_)).map(
+    outgoingDegree.keys.filterNot(nodeToOutcome.contains).foreach(
       nodeToOutcome(_) = Outcome.Draw)
 
     nodeToOutcome.toMap
