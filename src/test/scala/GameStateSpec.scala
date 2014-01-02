@@ -1,12 +1,7 @@
 package test.scala
 
-import org.scalatest._
-import main.scala.Creature
-import main.scala.CreatureCard
-import main.scala.Battleground
-import main.scala.GameState
-import main.scala.Outcome
-import main.scala.TurnPhase
+import org.scalatest.FlatSpec
+import main.scala._
 
 class GameStateSpec extends FlatSpec {
 
@@ -103,6 +98,25 @@ class GameStateSpec extends FlatSpec {
       GameState(
         turnPhase = TurnPhase.DeclareBlockers,
         battleground = Battleground.fromString("1/1, 2/2 (TA) vs 3/3")))
+  }
+
+  it should "perform attack, block and orderblocker moves using apply()" in {
+    val gameState =
+      GameState.fromString("20/20 (1/DeclareAttackers): 1/1, 2/2 vs 3/3")
+
+    val attackers = Set(0, 1)
+    val attackMove = AttackMove(attackers)
+    assert(gameState(attackMove) === gameState.declareAttackers(attackers))
+
+    val blockers = Map(0 -> 1)
+    val blockMove = BlockMove(blockers)
+    assert(gameState(attackMove)(blockMove) ===
+      gameState.declareAttackers(attackers).declareBlockers(blockers))
+
+    val gs2 = gameState(attackMove)(blockMove)
+    val combatAssignment = gs2.combatAssignment
+    val orderBlockersMove = OrderBlockersMove(combatAssignment)
+    assert(gs2(orderBlockersMove) === gs2.resolveCombat(combatAssignment))
   }
 
   it should "determine if a blocking assignment is valid or not" in {

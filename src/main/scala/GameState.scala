@@ -140,7 +140,13 @@ case class GameState(
       (map, idx) => map.updated(idx, List[Int]()))
   }
 
-  /* State-altering methods */
+  /* Transforming methods */
+
+  def apply(move: GameMove): GameState = move match {
+    case AttackMove(wrapped) => declareAttackers(wrapped)
+    case BlockMove(wrapped) => declareBlockers(wrapped)
+    case OrderBlockersMove(wrapped) => resolveCombat(wrapped)
+  }
 
   def declareAttackers(attackingCreatureUids: Set[Int]): GameState = {
     if (!isValidAttack(attackingCreatureUids) ||
